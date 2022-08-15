@@ -58,6 +58,7 @@ module.exports = {
 
 			var [countdownHour, countdownMinute, totalMinutes, epochTime] = getCountdown(timeScheduled);
 
+			let [yesString, noString] = createString(yesEntry, noEntry); //array size
 
 			// Embed 
 			var mainEmbed = new MessageEmbed()
