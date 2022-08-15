@@ -63,8 +63,7 @@ module.exports = {
 				let mainEmbed = createEmbed(yesString, maybeString, noString, yesEntry, maybeEntry, noEntry); 
 				let buttons = createButton();
 
-				await i.deleteReply();
-				await i.followUp({embeds: [mainEmbed], components: [buttons]});
+				await i.editReply({embeds: [mainEmbed], components: [buttons]});
 			}
 
 			else if (buttonClicked === "maybe5man" ) {
