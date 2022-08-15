@@ -334,7 +334,7 @@ function getCountdown(timeScheduled) {
     const scheduledTimeArray = timeScheduled.split(":");
 
     var d = new Date();
-    var cetHour = d.getUTCHours()+2;  //CHANGE FOR CET/CEST
+    var cetHour = d.getUTCHours();  //CHANGE FOR CET/CEST
     var cetMinute = d.getUTCMinutes();
     
     var cetTime = (cetHour*60 + cetMinute);
