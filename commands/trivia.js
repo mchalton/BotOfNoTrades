@@ -10,7 +10,7 @@ module.exports = {
 
 		// Get Trivia question
 		if (Math.random() < 0.5) {
-			const res = await axios.get('https://api.trivia.willfry.co.uk/questions?limit=1', {
+			const res = await axios.get('https://the-trivia-api.com/api/questions?limit=11', {
 				headers: {
 					'Test-Header': 'test-value'
 				}
