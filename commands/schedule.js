@@ -50,7 +50,7 @@ module.exports = {
 				console.log('Close the database connection.');
 			});
 			
-			var yesEntry = ["🎗️CommonCrayon 🔸"];
+			var yesEntry = [assignPriority(interaction.user.username)];
 			var maybeMention = [];
 			var noEntry = [];
 
