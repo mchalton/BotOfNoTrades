@@ -351,7 +351,7 @@ function getCountdown(timeScheduled) {
 
 	// Get Epoch Time
 	var epochTime = new Date();
-	epochTime.setHours(integerUTCHour-16, integerUTCMin, 0, 0); // CET/CEST might change things!
+	epochTime.setHours(integerUTCHour, integerUTCMin, 0, 0); // CET/CEST might change things!
 	var epochTime = String(epochTime.getTime());
 	epochTime = epochTime.slice(0, -3)
 
