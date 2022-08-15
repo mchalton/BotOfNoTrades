@@ -68,8 +68,8 @@ module.exports = {
 				.addFields(
 					{ name: 'Time:', value: `<t:${epochTime}>`},
 					{ name: 'Countdown:', value: `Starting in ${countdownHour}H ${countdownMinute}M`},
-					{ name: '__Yes:__', value: 'Empty' , inline: true},
-					{ name: '__No:__', value: 'Empty', inline: true })
+					{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
+					{ name: `__No(${noEntry.length}):__`, value: noString, inline: true })
 				.setFooter({ text:'Server IP: connect crayon.csgo.fr:27015; password fun', iconURL: 'https://i.imgur.com/nuEpvJd.png'})
 
 			
