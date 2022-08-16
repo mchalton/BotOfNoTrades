@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
+const { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } = require('discord.js');
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 
@@ -10,7 +10,11 @@ module.exports = {
 		.setName('teams')
 		.setDescription('Choose teams for 10man!')
 		.addUserOption(option => option.setName('1').setDescription('Choose captain for team 1').setRequired(true))
-        .addUserOption(option => option.setName('2').setDescription('Choose captain for team 2').setRequired(true)),
+        .addUserOption(option => option.setName('2').setDescription('Choose captain for team 2').setRequired(true))
+		.addIntegerOption(option => option.setName('first').setDescription('Which team picks first?').setRequired(true)
+		.addChoice('1', 1).addChoice('2', 2))
+		.addStringOption(option => option.setName('count').setDescription('How many first picks?').setRequired(true)
+		.addChoice('1', '1').addChoice('2', '2').addChoice('Any', 'Any')),
 
 	async execute(interaction) {
         // Checking if user is an admin
@@ -28,277 +32,248 @@ module.exports = {
 			await interaction.reply({ embeds: [deniedEmbed], ephemeral: true })
 			return;	
 		}		
-
-        var testEmbed = new MessageEmbed().setColor('0xFF6F00').setTitle('Wow').setDescription('Message received');		
+	
 		console.log(`Teams triggered by ${interaction.user.tag} in #${interaction.channel.name}.`);
 
         const captain1 = interaction.options.getUser('1');
         const captain2 = interaction.options.getUser('2');
+		
+		const firstPick = interaction.options.getInteger('first');
+		
+		let pickTeam1 = firstPick == 1;
 
+		let picks = 0;
+		let pickCounter = 0;
+		let freePick = false;
+		const pickOpt = interaction.options.getString('count');
+		if (pickOpt == 'Any') {
+			freePick = true;
+		}
+		else {
+			picks = parseInt(pickOpt);
+		}
+
+
+		const testing = true;
+
+		// get all users in voice channel
+		const users = interaction.guild.channels.cache.get(`809937101159923755`).members;
+		const userNames = testing ? ["test1", "test2"] : users.map(user => user.displayName);
+			
+		// remove captains as available picks
+		const c1Index = userNames.indexOf(captain1.username);
+		if (c1Index != -1)
+			userNames.splice(c1Index, 1);	
+		const c2Index = userNames.indexOf(captain2.username);		
+		if (c2Index != -1)
+			userNames.splice(c2Index, 1);
+
+		// setup teams
         let team1 = [];
         let team2 = [];
+        team1.push(captain1.username);
+        team2.push(captain2.username);
 
-        team1.push(captain1);
-        team2.push(captain2);
-        createEmbed(team1, team2);
-		//const reply = await interaction.fetchReply();
-		//const interactionTimeout = 600 * 1000;
-		//const collector = reply.createMessageComponentCollector({time: interactionTimeout});
+        const embed = createEmbed(team1, team2, userNames, {count: picks, freePick: freePick, pickTeam1: pickTeam1});
+		const selector = createSelector(userNames);
+		await interaction.reply({embeds: [embed], components: [selector]});
 
-		/*timeScheduled = interaction.options.getString('time');	//Getting String for timeScheduled posted in Time embed.
-
-		let reply = await interaction.fetchReply()
-		let doingUpdate = false;
-		let maybeMsg1 = true;
-		let maybeMsg2 = true;
-
-		const doUpdate = async () => {
-			if (doingUpdate) {// doing update, try again later
-				setTimeout(doUpdate, 1000);
-				console.log('Skipping update');
-				return;
-			}
-
-			const [, , totalMinutes,] = getCountdown(timeScheduled)
-			
-			if ((totalMinutes <= 60) && (maybeMsg1)) {
-				let maybeString = ""
-				for (element in maybeMention) {maybeString += (`<@${maybeMention[element]}> `)}
-				if (maybeString != "") await interaction.guild.channels.cache.get(`${secretinfo.channelID}`).send(`Select Yes or No for the 10 man: ${maybeString}`);
-				maybeMsg1 = false;
-			}
-
-			if ((totalMinutes <= 30) && (maybeMsg2)) {
-				let maybeString = ""
-
-				function checkMaybe(yesEntry) {
-					for (element in yesEntry) {
-						if ((yesEntry[element]).includes('🔸')) {
-							return true;
-						}
-					}
-					return false;
-				}
-
-				do {
-					for (element in yesEntry) {
-						if ((yesEntry[element]).includes('🔸')) {
-							
-							let nopush = yesEntry[element];
-		
-							yesEntry.splice(element, 1);
-							noEntry.push(nopush.slice(0, -3));
-						}
-					}
-				} while (checkMaybe(yesEntry));
-
-				for (element in maybeMention) {maybeString += (`<@${maybeMention[element]}> `)}
-				if (maybeString != "") await interaction.guild.channels.cache.get(`${secretinfo.channelID}`).send(`Moved to No: ${maybeString}`);
-				maybeMsg2 = false;
-			}
-
-			let [yesString, noString] = createString(yesEntry, noEntry); //array size
-			let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry);
-			let buttons = createButton();
-
-			await reply.edit({embeds: [mainEmbed],components: [buttons]});
-
-			if (totalMinutes >= -20) setTimeout(doUpdate, 60000); // stop updating when time 
-			else console.log("Ending Update on Schedule Message");
-		}
-		setTimeout(doUpdate, 60000);
-
-		const totalMinutesNum = totalMinutes;
-		const interactionTimeout = (30 + totalMinutesNum) * 60 * 1000;
+		const reply = await interaction.fetchReply();
+		//await reply.edit({embeds: [embed]});
+		const interactionTimeout = 600 * 1000;
 		const collector = reply.createMessageComponentCollector({time: interactionTimeout});
 
+		let followUps = [];
+		let adminFollowUps = [];
+		
 		collector.on('collect', async i => {
-
-			doingUpdate = true;
+			await i.deferUpdate();
 			
-			user = (i.user.username);
-			buttonClicked = (i.customId);
+			const itemClicked = (i.customId);
+			const clicker = (i.user);
 
-			user = assignPriority(user);
+			if (itemClicked == 'select') {
+				const selectedUser = i.values[0];	
 
-			if (buttonClicked === "yes" ) {
-				await i.deferUpdate();
-
-				if (yesEntry.indexOf(user) > -1) return;
-
-				else if (yesEntry.indexOf(user + " 🔸") > -1) {
-					yesEntry[yesEntry.indexOf(user + " 🔸")] = user;
-					if ((maybeMention.indexOf(i.user.id)) !== -1) maybeMention.splice((maybeMention.indexOf(i.user.id)), 1);
+				let permission = false;
+				if (freePick && (clicker.id == captain1.id || clicker.id == captain2.id)) {			
+					permission = true;
 				}
-
-				else if (noEntry.indexOf(user) > -1) {
-					noEntry.splice(noEntry.indexOf(user), 1);
-					yesEntry.push(user);
+				else if (pickTeam1 && clicker.id == captain1.id) {				
+					permission = true;
 				}
-
-				else yesEntry.push(user);
-
+				else if (!pickTeam1 && clicker.id == captain2.id) {				
+					permission = true;
+				}
 				
-				let [yesString, noString] = createString(yesEntry, noEntry); //array size
-				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
-				let buttons = createButton(); 
 
-				await i.editReply({embeds: [mainEmbed], components: [buttons]});
-			}
+				if (!permission) {
+					// check why not allowed
+					var deniedString = (clicker.id != captain1.id && clicker.id != captain2.id) ? 
+					'Not a captain' :
+					'Wait your turn!';
+					
+					// already warned just reply
+					for (const index in followUps) {
+						const entry = followUps[index];
+						if (entry.user == clicker.id) {
+							i.editReply();
+							return;
+						}
+					}
 
-			else if (buttonClicked === "maybe" ) {
-				await i.deferUpdate();
-
-				if (yesEntry.indexOf(user) > -1) {
-					yesEntry[yesEntry.indexOf(user)] = (user + " 🔸");
-					maybeMention.push(i.user.id);
+					// show warning to user
+					const msg = await i.followUp({ content: deniedString, ephemeral: true });
+					followUps.push({user: clicker.id, message: msg});
+					
+					return;
 				}
 
-				else if (yesEntry.indexOf(user + " 🔸") > -1) return;
 
-				else if (noEntry.indexOf(user) > -1) {
-					noEntry.splice(noEntry.indexOf(user), 1);
-					yesEntry.push(user + " 🔸");
-					maybeMention.push(i.user.id);
+				if (freePick) {
+					if (clicker.id == captain1.id) {
+						team1.push(selectedUser);
+					}
+					else if (clicker.id == captain2.id) {
+						team2.push(selectedUser);
+					}
 				}
-
 				else {
-					yesEntry.push(user + " 🔸");
-					maybeMention.push(i.user.id);
+					if (pickTeam1)
+						team1.push(selectedUser);
+					else
+						team2.push(selectedUser);
 				}
 
-				let [yesString, noString] = createString(yesEntry, noEntry);
-				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
-				let buttons = createButton();
+				pickCounter++;
+				// had all picks, swap to other team
+				if (!freePick && pickCounter == picks) {
+					pickCounter = 0; 
+					pickTeam1 = !pickTeam1;
+					picks = 2;
+				}
 
-				await i.editReply({embeds: [mainEmbed], components: [buttons]});
+				const index = userNames.indexOf(selectedUser);
+				if (index != -1)
+					userNames.splice(index, 1);	
+					
+
+				const embed = createEmbed(team1, team2, userNames, {count: picks, freePick: freePick, pickTeam1: pickTeam1});
+				if (userNames.length != 0) {
+					const selector = createSelector(userNames);
+					await i.editReply({embeds: [embed], components: [selector]});
+				}
+				else 
+				{
+					const moveButton = createMoveButton();
+					await i.editReply({embeds: [embed], components: [moveButton]});
+				}
+			} 
+			else if (itemClicked == 'move') {
+				let adminCheck = false;
+				for (let i = 0; i < adminJson.admins.length; i++) {
+					if ((adminJson.admins[i].userid) == (interaction.user.id)) {
+						adminCheck = true;
+					}
+				}
+				if (!adminCheck) {
+					// only admins can move users
+					var deniedString = 'Admins Only';
+					
+					// already warned just reply
+					for (const index in adminFollowUps) {
+						const entry = adminFollowUps[index];
+						if (entry.user == clicker.id) {
+							i.editReply();
+							return;
+						}
+					}
+
+					// show warning to user
+					const msg = await i.followUp({ content: deniedString, ephemeral: true });
+					adminFollowUps.push({user: clicker.id, message: msg});
+					
+					return;
+				}
+
+				const users = interaction.guild.channels.cache.get(`809937101159923755`).members;
+				for (const value of users.values()) {
+					value.voice.setChannel('1009109924342661191');
+				}
+				const embed = createEmbed(team1, team2, userNames, {count: picks, freePick: freePick, pickTeam1: pickTeam1});
+				await i.editReply({embeds: [embed], components: []});
 			}
-
-			else if (buttonClicked === "no") {
-				await i.deferUpdate();
-
-				if (yesEntry.indexOf(user) > -1) {
-					yesEntry.splice(yesEntry.indexOf(user), 1);
-					noEntry.push(user);
-				}
-
-				else if (yesEntry.indexOf(user + " 🔸") > -1) {
-					yesEntry.splice(yesEntry.indexOf(user + " 🔸"), 1);
-					noEntry.push(user);
-					if ((maybeMention.indexOf(i.user.id)) !== -1) maybeMention.splice((maybeMention.indexOf(i.user.id)), 1);
-				}
-
-				else if (noEntry.indexOf(user) > -1) return;
-				else noEntry.push(user);
-
-				let [yesString, noString] = createString(yesEntry, noEntry);
-				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
-				let buttons = createButton(); 
-
-				await i.editReply({embeds: [mainEmbed], components: [buttons]});
-			}
-			doingUpdate = false;
-		});*/
+		});
 	},
 };
 
 
-function createEmbed(team1, team2) {
-    let names1 = team1.map(user => user.username);
-    let names2 = team2.map(user => user.username);
+const createEmbed = (team1, team2, users, pick_options) => {
+	const names1String = team1.join("\n");
+	const names2String = team2.join("\n");
 
-	var mainEmbed = new MessageEmbed()
-		.setColor('0xFF6F00')
-		.setTitle('Choose Teams')
-		.setDescription('Selecting teams for 10-man')
-		.addFields(
-			{ name: `__Team 1__`, value: names1, inline: true},
-			{ name: `__Team 2__`, value: names2, inline: true });
-	return mainEmbed;
+	if (users.length != 0) {
+		let title = 'Choose Teams';
+		let description = 'Selecting teams for 10-man';
+		if (pick_options && !pick_options.freePick) {
+			if (users.length < pick_options.count)
+				pick_options.count = users.length;
+			if (pick_options.pickTeam1) {
+				title = 'Team 1 Picking';
+				description = 'Choose ' + pick_options.count.toString() + ' players';
+			}
+			else {
+				title = 'Team 2 Picking';
+				description = 'Choose ' + pick_options.count.toString() + ' players';
+			}
+		}
+		const remainingString = users.join("\n");
+		var mainEmbed = new MessageEmbed()
+			.setColor('0xFF6F00')
+			.setTitle(title)
+			.setDescription(description)
+			.addFields(
+				{ name: `__     Team 1     __`, value: names1String, inline: true},
+				{ name: `__     Team 2     __`, value: names2String, inline: true },
+				{ name: '\u200B', value: '\u200B' },
+				{ name: `__ Remaining __`, value: remainingString, inline: false });
+		return mainEmbed;
+	}
+	else {
+		var mainEmbed = new MessageEmbed()
+			.setColor('0xFF6F00')
+			.setTitle('Final Teams')
+			.setDescription('Selected teams for 10-man')
+			.addFields(
+				{ name: `__     Team 1     __`, value: names1String, inline: true},
+				{ name: `__     Team 2     __`, value: names2String, inline: true });
+		return mainEmbed;
+	}
 }
 
-
-function createButton() {
-	const [, , totalMinutes,] = getCountdown(timeScheduled)
-
-	if (totalMinutes > 60 ) {
-		var buttons = new MessageActionRow().addComponents(
-			new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
-			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🔸'),
-			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'));
-	}
-
-	else if (totalMinutes > -15) {
-		var buttons = new MessageActionRow().addComponents(
-			new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
-			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🔸').setDisabled(true),
-			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'));
-	}
-
-	else {
-		var buttons = new MessageActionRow().addComponents(
-			new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍').setDisabled(true),
-			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🔸').setDisabled(true),
-			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎').setDisabled(true));
-	}
+const createMoveButton = () => {
+	var buttons = new MessageActionRow().addComponents(
+		new MessageButton().setCustomId('move').setLabel('Move Channels').setStyle('SUCCESS'));
 	return buttons;
 }
 
+const createSelector = (users) => {
 
-function createString(yesEntry, noEntry) {
-	// For Yes
-	if (yesEntry.length == 0) yesString = "Empty";
-	else {
-		yesString = "";
-		for (var l = 0; l < yesEntry.length; l++) {
-			if (l == 9) {
-				yesString = (yesString + yesEntry[l] + '\n🔹➖➖➖➖🔹\n');
-			}
-			else {
-				yesString = (yesString + yesEntry[l] + '\n');
-			}
-			
-		}
+	let options = [];
+	for (const index in users) {
+		options.push({
+			label: users[index],
+			value: users[index]
+		})
 	}
 
-	// For No
-	if (noEntry.length == 0) noString = "Empty";
-	else {
-		noString = "";
-		for (var l = 0; l < noEntry.length; l++) {
-			noString = (noString + noEntry[l] + '\n');
-		}
-	}
+	const row = new MessageActionRow()
+		.addComponents(
+			new MessageSelectMenu()
+				.setCustomId('select')
+				.setPlaceholder('Pick a player')
+				.addOptions(options)
+		);
 
-	return [yesString, noString];
-}
-
-
-function getCountdown(timeScheduled) {
-    const scheduledTimeArray = timeScheduled.split(":");
-
-    var d = new Date();
-    var cetHour = d.getUTCHours();  //CHANGE FOR CET/CEST
-    var cetMinute = d.getUTCMinutes();
-    
-    var cetTime = (cetHour*60 + cetMinute);
-    
-    var integerUTCHour = parseInt(scheduledTimeArray[0], 10);
-    var integerUTCMin = parseInt(scheduledTimeArray[1], 10);
-    var integerCET = parseInt(cetTime, 10);
-    
-    scheduledMinutes = (integerUTCHour*60 + integerUTCMin);
-    
-    totalMinutes = (scheduledMinutes - integerCET);
-    
-    countdownHour = Math.floor(totalMinutes / 60);
-    countdownMinute = (totalMinutes - countdownHour*60);
-
-	// Get Epoch Time
-	var epochTime = new Date();
-	epochTime.setHours(integerUTCHour, integerUTCMin, 0, 0); // CET/CEST might change things!
-	var epochTime = String(epochTime.getTime());
-	epochTime = epochTime.slice(0, -3)
-
-    return [countdownHour, countdownMinute, totalMinutes, epochTime];
+	return row;
 }
