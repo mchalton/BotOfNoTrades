@@ -54,10 +54,16 @@ module.exports = {
 		}
 
 
-		const testing = true;
+		const testing = false;
+
+		const channel1 = interaction.guild.channels.cache.get(secretinfo.voiceChannel1).members;
+		const channel2 = interaction.guild.channels.cache.get(secretinfo.voiceChannel2).members;
+
+		const mainChannel = channel1.size >= channel2.size ? secretinfo.voiceChannel1 : secretinfo.voiceChannel2;
+		const otherChannel = channel1.size >= channel2.size ? secretinfo.voiceChannel2 : secretinfo.voiceChannel1;
 
 		// get all users in voice channel
-		const users = interaction.guild.channels.cache.get(`809937101159923755`).members;
+		const users = interaction.guild.channels.cache.get(mainChannel).members;
 		const userNames = testing ? ["test1", "test2"] : users.map(user => user.displayName);
 			
 		// remove captains as available picks
@@ -106,7 +112,6 @@ module.exports = {
 					permission = true;
 				}
 				
-
 				if (!permission) {
 					// check why not allowed
 					var deniedString = (clicker.id != captain1.id && clicker.id != captain2.id) ? 
@@ -196,9 +201,13 @@ module.exports = {
 					return;
 				}
 
-				const users = interaction.guild.channels.cache.get(`809937101159923755`).members;
+				// move team 2 to other channel
+				const users = interaction.guild.channels.cache.get(mainChannel).members;
 				for (const value of users.values()) {
-					value.voice.setChannel('1009109924342661191');
+					const isTeam2 = team2.includes(value.displayName);
+					if (isTeam2) {
+						value.voice.setChannel(otherChannel);
+					}
 				}
 				const embed = createEmbed(team1, team2, userNames, {count: picks, freePick: freePick, pickTeam1: pickTeam1});
 				await i.editReply({embeds: [embed], components: []});
@@ -218,13 +227,14 @@ const createEmbed = (team1, team2, users, pick_options) => {
 		if (pick_options && !pick_options.freePick) {
 			if (users.length < pick_options.count)
 				pick_options.count = users.length;
+			const num_string =pick_options.count.toString();
 			if (pick_options.pickTeam1) {
 				title = 'Team 1 Picking';
-				description = 'Choose ' + pick_options.count.toString() + ' players';
+				description = 'Choose ' + num_string + ' player(s) for Team 1';
 			}
 			else {
 				title = 'Team 2 Picking';
-				description = 'Choose ' + pick_options.count.toString() + ' players';
+				description = 'Choose ' + num_string + ' player(s) for Team 2';
 			}
 		}
 		const remainingString = users.join("\n");
@@ -233,10 +243,10 @@ const createEmbed = (team1, team2, users, pick_options) => {
 			.setTitle(title)
 			.setDescription(description)
 			.addFields(
-				{ name: `__     Team 1     __`, value: names1String, inline: true},
-				{ name: `__     Team 2     __`, value: names2String, inline: true },
+				{ name: `__     Team 1:     __`, value: names1String, inline: true},
+				{ name: `__     Team 2:    __`, value: names2String, inline: true },
 				{ name: '\u200B', value: '\u200B' },
-				{ name: `__ Remaining __`, value: remainingString, inline: false });
+				{ name: `__Players:__`, value: remainingString, inline: false });
 		return mainEmbed;
 	}
 	else {
