@@ -347,11 +347,11 @@ function getCountdown(timeScheduled) {
     
     var cetTime = (cetHour*60 + cetMinute);
     
-    var integerUTCHour = parseInt(scheduledTimeArray[0], 10);
+    var integerUTCHour = parseInt(scheduledTimeArray[0], 10)- hourOffset;
     var integerUTCMin = parseInt(scheduledTimeArray[1], 10);
     var integerCET = parseInt(cetTime, 10);
     
-    scheduledMinutes = (integerUTCHour*60 + integerUTCMin);
+    scheduledMinutes = ((integerUTCHour )*60 + integerUTCMin);
     
     totalMinutes = (scheduledMinutes - integerCET);
     
@@ -360,7 +360,7 @@ function getCountdown(timeScheduled) {
 
 	// Get Epoch Time
 	var epochTime = new Date();
-	epochTime.setHours(integerUTCHour - hourOffset, integerUTCMin, 0, 0); // CET/CEST might change things!
+	epochTime.setHours(integerUTCHour , integerUTCMin, 0, 0); // CET/CEST might change things!
 	var epochTime = String(epochTime.getTime());
 	epochTime = epochTime.slice(0, -3)
 
