@@ -9,12 +9,12 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('teams')
 		.setDescription('Choose teams for 10man!')
-		.addUserOption(option => option.setName('1').setDescription('Choose captain for team 1').setRequired(true))
-        .addUserOption(option => option.setName('2').setDescription('Choose captain for team 2').setRequired(true))
-		.addIntegerOption(option => option.setName('first').setDescription('Which team picks first?').setRequired(true)
-		.addChoice('1', 1).addChoice('2', 2))
-		.addStringOption(option => option.setName('count').setDescription('How many first picks?').setRequired(true)
-		.addChoice('1', '1').addChoice('2', '2').addChoice('Any', 'Any')),
+		.addUserOption(option => option.setName('captain1').setDescription('Choose captain for team 1').setRequired(true))
+        .addUserOption(option => option.setName('captain2').setDescription('Choose captain for team 2').setRequired(true))
+		.addIntegerOption(option => option.setName('pickfirst').setDescription('Which team picks first?').setRequired(true)
+		.addChoice('Team 1', 1).addChoice('Team 2', 2))
+		.addStringOption(option => option.setName('pickfirstcount').setDescription('How many first picks?').setRequired(true)
+		.addChoice('1 Pick', '1').addChoice('2 Picks', '2').addChoice('Any', 'Any')),
 
 	async execute(interaction) {
         // Checking if user is an admin
@@ -35,17 +35,17 @@ module.exports = {
 	
 		console.log(`Teams triggered by ${interaction.user.tag} in #${interaction.channel.name}.`);
 
-        const captain1 = interaction.options.getUser('1');
-        const captain2 = interaction.options.getUser('2');
+        const captain1 = interaction.options.getUser('captain1');
+        const captain2 = interaction.options.getUser('captain2');
 		
-		const firstPick = interaction.options.getInteger('first');
+		const firstPick = interaction.options.getInteger('pickfirst');
 		
 		let pickTeam1 = firstPick == 1;
 
 		let picks = 0;
 		let pickCounter = 0;
 		let freePick = false;
-		const pickOpt = interaction.options.getString('count');
+		const pickOpt = interaction.options.getString('pickfirstcount');
 		if (pickOpt == 'Any') {
 			freePick = true;
 		}
@@ -54,7 +54,7 @@ module.exports = {
 		}
 
 
-		const testing = false;
+		const testing = true;
 
 		const channel1 = interaction.guild.channels.cache.get(secretinfo.voiceChannel1).members;
 		const channel2 = interaction.guild.channels.cache.get(secretinfo.voiceChannel2).members;
@@ -65,6 +65,7 @@ module.exports = {
 		// get all users in voice channel
 		const users = interaction.guild.channels.cache.get(mainChannel).members;
 		const userNames = testing ? ["test1", "test2"] : users.map(user => user.displayName);
+
 			
 		// remove captains as available picks
 		const c1Index = userNames.indexOf(captain1.username);
@@ -73,6 +74,14 @@ module.exports = {
 		const c2Index = userNames.indexOf(captain2.username);		
 		if (c2Index != -1)
 			userNames.splice(c2Index, 1);
+
+			
+		if (userNames.length == 0)
+		{
+			var deniedEmbed = new MessageEmbed().setColor('0xFF6F00').setTitle('No players found').setDescription('Must be at least 1 other player')
+			await interaction.reply({ embeds: [deniedEmbed], ephemeral: true })
+			return;	
+		}
 
 		// setup teams
         let team1 = [];
