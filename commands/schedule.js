@@ -333,38 +333,39 @@ function createString(yesEntry, noEntry) {
 function getCountdown(timeScheduled) {
     const scheduledTimeArray = timeScheduled.split(":");
 
-	const utcTime = new Date();
-	const timeInEurope = new Date(utcTime.toLocaleString('en-US', { timeZone: 'Europe/Paris'}));
-	const diff = timeInEurope.getTime() - utcTime.getTime();
+	const serverTime = new Date();
+	const timeInEurope = new Date(serverTime.toLocaleString('en-US', { timeZone: 'Europe/Paris'}));
+	const diff = timeInEurope.getTime() - serverTime.getTime();
 	const hoursApprox = (diff / (1000 * 60 * 60));
 
 	const hourOffset = Math.round(hoursApprox);
 
 
-    var d = new Date();
-    var cetHour = d.getUTCHours();  //CHANGE FOR CET/CEST
-    var cetMinute = d.getUTCMinutes();
+    var currServerTime = new Date();
+    var currentHour = currServerTime.getHours();  //CHANGE FOR CET/CEST
+    var currentMinute = currServerTime.getMinutes();
     
-    var cetTime = (cetHour*60 + cetMinute);
+    var currentTime = (currentHour*60 + currentMinute);
     
-    var integerUTCHour = parseInt(scheduledTimeArray[0], 10)- hourOffset;
-    var integerUTCMin = parseInt(scheduledTimeArray[1], 10);
-    var integerCET = parseInt(cetTime, 10);
+    var scheduledHour = parseInt(scheduledTimeArray[0], 10)- hourOffset;
+    var scheduledMinute = parseInt(scheduledTimeArray[1], 10);
+
+    var currentTimeInt = parseInt(currentTime, 10);
     
-    scheduledMinutes = ((integerUTCHour )*60 + integerUTCMin);
+    scheduledMinutes = ((scheduledHour )*60 + scheduledMinute);
     
-    totalMinutes = (scheduledMinutes - integerCET);
+    const diffMinutes = (scheduledMinutes - currentTimeInt);
     
-    countdownHour = Math.floor(totalMinutes / 60);
-    countdownMinute = (totalMinutes - countdownHour*60);
+    countdownHour = Math.floor(diffMinutes / 60);
+    countdownMinute = (diffMinutes - countdownHour*60);
 
 	// Get Epoch Time
 	var epochTime = new Date();
-	epochTime.setHours(integerUTCHour , integerUTCMin, 0, 0); // CET/CEST might change things!
+	epochTime.setHours(scheduledHour , scheduledMinute, 0, 0); // CET/CEST might change things!
 	var epochTime = String(epochTime.getTime());
 	epochTime = epochTime.slice(0, -3)
 
-    return [countdownHour, countdownMinute, totalMinutes, epochTime];
+    return [countdownHour, countdownMinute, diffMinutes, epochTime];
 }
 
 
