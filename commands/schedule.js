@@ -352,9 +352,9 @@ function getCountdown(timeScheduled) {
 
     var currentTimeInt = parseInt(currentTime, 10);
     
-    scheduledMinutes = ((scheduledHour )*60 + scheduledMinute);
+    const scheduledTotalMin = ((scheduledHour )*60 + scheduledMinute);
     
-    const diffMinutes = (scheduledMinutes - currentTimeInt);
+    const diffMinutes = (scheduledTotalMin - currentTimeInt);
     
     countdownHour = Math.floor(diffMinutes / 60);
     countdownMinute = (diffMinutes - countdownHour*60);
