@@ -2,8 +2,10 @@
 * text=auto
 node_modules
 config.json
+config-live.json
 process.env
 data/
 
 log.txt
 commands/database/secretinfo.json
+commands/database/secretinfo-live.json

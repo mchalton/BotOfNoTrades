@@ -333,6 +333,14 @@ function createString(yesEntry, noEntry) {
 function getCountdown(timeScheduled) {
     const scheduledTimeArray = timeScheduled.split(":");
 
+	const utcTime = new Date();
+	const timeInEurope = new Date(utcTime.toLocaleString('en-US', { timeZone: 'Europe/Paris'}));
+	const diff = timeInEurope.getTime() - utcTime.getTime();
+	const hoursApprox = (diff / (1000 * 60 * 60));
+
+	const hourOffset = Math.round(hoursApprox);
+
+
     var d = new Date();
     var cetHour = d.getUTCHours();  //CHANGE FOR CET/CEST
     var cetMinute = d.getUTCMinutes();
@@ -352,7 +360,7 @@ function getCountdown(timeScheduled) {
 
 	// Get Epoch Time
 	var epochTime = new Date();
-	epochTime.setHours(integerUTCHour, integerUTCMin, 0, 0); // CET/CEST might change things!
+	epochTime.setHours(integerUTCHour - hourOffset, integerUTCMin, 0, 0); // CET/CEST might change things!
 	var epochTime = String(epochTime.getTime());
 	epochTime = epochTime.slice(0, -3)
 

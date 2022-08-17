@@ -179,11 +179,7 @@ module.exports = {
 		
 			interaction.channel.send(
 				{  content: `The correct answer is: ${correct_answer}\nCongratulations to: ${correctEntries}\nBetter luck next time: ${incorrectEntries}`,
-			});
-			
-			command.execute(interaction);
-
-			
+			});			
 		});
 
 	}
