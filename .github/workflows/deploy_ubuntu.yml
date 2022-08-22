@@ -8,9 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name:
-        uses: fifsky/ssh-action@master
+        uses: garygrossgarten/github-action-ssh@release
         with:
           host: ${{ secrets.SSH_HOST}}
-          user: ${{ secrets.SSH_USER}}
-          key: ${{ secrets.PRIVATE_KEY }}
+          username: ${{ secrets.SSH_USER}}
+          privateKey: ${{ secrets.PRIVATE_KEY }}
           command: ls
