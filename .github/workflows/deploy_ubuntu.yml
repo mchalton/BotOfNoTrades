@@ -8,9 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name:
-        uses: garygrossgarten/github-action-ssh@release
+        uses: JimCronqvist/action-ssh@master
         with:
-          host: ${{ secrets.SSH_HOST}}
-          username: ${{ secrets.SSH_USER}}
+          hosts: '${{ secrets.SSH_USER}}@${{ secrets.SSH_HOST}}'
           privateKey: ${{ secrets.PRIVATE_KEY }}
           command: ls
