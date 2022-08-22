@@ -13,4 +13,7 @@ jobs:
         with:
           hosts: ${{ format('{0}@{1}', secrets.SSH_USER, secrets.SSH_HOST) }}
           privateKey: ${{ secrets.PRIVATE_KEY }}
-          command: ls
+          command: |
+           cd BotOfNoTrades
+           git pull
+           pm2 restart 0
