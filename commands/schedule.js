@@ -269,7 +269,8 @@ function createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry) {
 			{ name: 'Time:', value: `<t:${epochTime}>` },
 			{ name: 'Countdown:', value: countdownOutput},
 			{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
-			{ name: `__No(${noEntry.length}):__`, value: noString, inline: true })
+			{ name: `__No(${noEntry.length}):__`, value: noString, inline: true },
+			{ name: '\u200b', value: "[Connect To Server](steam://connect/crayon.csgo.fr:27015/fun)"})
 		.setFooter({ text:'Server IP: connect crayon.csgo.fr:27015; password fun', iconURL: 'https://i.imgur.com/nuEpvJd.png'});
 	return mainEmbed;
 }
