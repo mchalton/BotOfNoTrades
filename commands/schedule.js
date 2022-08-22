@@ -71,6 +71,7 @@ module.exports = {
 					{ name: 'Countdown:', value: `Starting in ${countdownHour}H ${countdownMinute}M`},
 					{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
 					{ name: `__No(${noEntry.length}):__`, value: noString, inline: true })
+				.setThumbnail("https://cdn.discordapp.com/icons/118758644752842755/107536389c2960072fa81163e3fa4698.webp")
 				.setFooter({ text:'Server IP: connect crayon.csgo.fr:27015; password fun', iconURL: 'https://i.imgur.com/nuEpvJd.png'})
 
 			
@@ -269,6 +270,7 @@ function createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry) {
 			{ name: 'Countdown:', value: countdownOutput},
 			{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
 			{ name: `__No(${noEntry.length}):__`, value: noString, inline: true })
+		.setThumbnail("https://cdn.discordapp.com/icons/118758644752842755/107536389c2960072fa81163e3fa4698.webp")
 		.setFooter({ text:'Server IP: connect crayon.csgo.fr:27015; password fun', iconURL: 'https://i.imgur.com/nuEpvJd.png'});
 	return mainEmbed;
 }
