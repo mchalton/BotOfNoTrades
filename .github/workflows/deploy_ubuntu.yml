@@ -1,0 +1,16 @@
+name: Execute SSH commmands on remote server
+on:
+  push:
+    branches:
+    - 'dev'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name:
+        uses: fifsky/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST}}
+          user: ${{ secrets.SSH_USER}}
+          key: ${{ secrets.PRIVATE_KEY }}
+          command: ls
