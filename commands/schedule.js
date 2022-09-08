@@ -79,7 +79,9 @@ module.exports = {
 			var buttons = new MessageActionRow().addComponents(
 				new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
 				new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🔸'),
-				new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'));
+				new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'),
+				new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")
+				);
 
 			await interaction.reply({content: mentionSubs, embeds: [mainEmbed], components: [buttons]});
 		}
