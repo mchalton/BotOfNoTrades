@@ -42,7 +42,7 @@ module.exports = {
 
 		collector.on('collect', async i => {
 
-			try { await i.deferReply(); } 
+			try { await i.deferUpdate(); } 
 			catch (error) { console.error("Skipping 'Interaction has already been acknowledged.' Error."); }
 
 			user = (i.user.username);

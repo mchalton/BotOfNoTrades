@@ -122,7 +122,7 @@ module.exports = {
 				arraySequence(corAnsNum, 3, user, correctEntries, incorrectEntries);
 			}
 		
-			await i.deferReply();
+			await i.deferUpdate();
 		});
 
 		collector.on('end', async i => {

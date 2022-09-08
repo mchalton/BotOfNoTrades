@@ -167,7 +167,7 @@ module.exports = {
 			user = assignPriority(user);
 
 			if (buttonClicked === "yes" ) {
-				await i.deferReply();
+				await i.deferUpdate();
 
 				if (yesEntry.indexOf(user) > -1) return;
 
@@ -192,7 +192,7 @@ module.exports = {
 			}
 
 			else if (buttonClicked === "maybe" ) {
-				await i.deferReply();
+				await i.deferUpdate();
 
 				if (yesEntry.indexOf(user) > -1) {
 					yesEntry[yesEntry.indexOf(user)] = (user + " 🔸");
@@ -220,7 +220,7 @@ module.exports = {
 			}
 
 			else if (buttonClicked === "no") {
-				await i.deferReply();
+				await i.deferUpdate();
 
 				if (yesEntry.indexOf(user) > -1) {
 					yesEntry.splice(yesEntry.indexOf(user), 1);
@@ -246,7 +246,7 @@ module.exports = {
 				});
 			}
 			else if (buttonClicked === "update") {
-				await i.deferReply();
+				await i.deferUpdate();
 
 				let [yesString, noString] = createString(yesEntry, noEntry);
 				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry);

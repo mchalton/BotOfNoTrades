@@ -102,7 +102,7 @@ module.exports = {
 		let adminFollowUps = [];
 		
 		collector.on('collect', async i => {
-			await i.deferReply();
+			await i.deferUpdate();
 			
 			const itemClicked = (i.customId);
 			const clicker = (i.user);
