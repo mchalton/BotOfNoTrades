@@ -40,7 +40,7 @@ module.exports = {
 	
 			const data = await getData();
 			
-			mentionSubs = ' '
+			let mentionSubs = ' '
 			data.forEach(element => {
 				mentionSubs += ('<@' + element.userid + '> ');
 			});
@@ -50,13 +50,12 @@ module.exports = {
 				console.log('Close the database connection.');
 			});
 			
-			var yesEntry = [assignPriority(interaction.user.username)];
-			var maybeMention = [];
-			var noEntry = [];
+			let yesEntry = [assignPriority(interaction.user.username)];
+			let noEntry = [];
 
 			let timeScheduled = interaction.options.getString('time');
 
-			var [countdownHour, countdownMinute, totalMinutes, epochTime] = getCountdown(timeScheduled);
+			let [countdownHour, countdownMinute, totalMinutes, epochTime] = getCountdown(timeScheduled);
 
 			let [yesString, noString] = createString(yesEntry, noEntry); //array size
 
@@ -94,7 +93,7 @@ module.exports = {
 		
 		console.log(`Schedule triggered by ${interaction.user.tag} in #${interaction.channel.name}.`);
 
-		timeScheduled = interaction.options.getString('time');	//Getting String for timeScheduled posted in Time embed.
+		let timeScheduled = interaction.options.getString('time');	//Getting String for timeScheduled posted in Time embed.
 
 		let reply = await interaction.fetchReply()
 		let doingUpdate = false;
