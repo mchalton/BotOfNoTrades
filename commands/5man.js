@@ -36,6 +36,7 @@ module.exports = {
                 new MessageButton().setCustomId('yes5man').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
                 new MessageButton().setCustomId('maybe5man').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🤷'),
                 new MessageButton().setCustomId('no5man').setLabel('No').setStyle('DANGER').setEmoji('👎'),
+				new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")	
             );
 
         await interaction.reply({embeds: [mainEmbed], components: [buttons]});
@@ -93,6 +94,13 @@ module.exports = {
 
 				await i.editReply({embeds: [mainEmbed], components: [buttons]});
 			}
+			else if (buttonClicked === "update") {
+				let [yesString, maybeString, noString] = createString(yesEntry, maybeEntry, noEntry);
+				let mainEmbed = createEmbed(yesString, maybeString, noString, yesEntry, maybeEntry, noEntry); 
+				let buttons = createButton(); 
+
+				await i.editReply({embeds: [mainEmbed], components: [buttons]});
+			}
 		});;
 	},
 };
@@ -119,6 +127,7 @@ function createButton() {
 			new MessageButton().setCustomId('yes5man').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
 			new MessageButton().setCustomId('maybe5man').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🤷'),
 			new MessageButton().setCustomId('no5man').setLabel('No').setStyle('DANGER').setEmoji('👎'),
+			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")
 		);
 	return buttons;
 }
