@@ -1,10 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
 
-let yesEntry = [];
-let maybeEntry = [];
-let noEntry = [];
-
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('5man')
@@ -13,9 +9,9 @@ module.exports = {
 	async execute(interaction) {
 		console.log(`5man triggered by ${interaction.user.tag} in #${interaction.channel.name}.`);
 
-		yesEntry = [];
-		maybeEntry = [];
-		noEntry = [];
+		let yesEntry = [];
+		let maybeEntry = [];
+		let noEntry = [];
 
         // Embed 
         let mainEmbed = new MessageEmbed()
