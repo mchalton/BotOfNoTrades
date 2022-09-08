@@ -21,79 +21,76 @@ module.exports = {
 			}
 		}
         
-        if (adminCheck) {
-			// open the database
-			let db = new sqlite3.Database('./commands/database/subscribers.db', sqlite3.OPEN_READWRITE, (err) => {
-				if (err) console.error(err.message);
-				console.log('Connected to the database.');
-			});
-		
-			// Getting all the rows in the database
-			function getData() {
-				return new Promise((resolve, reject) => {
-					db.all(`SELECT userid FROM subscriber`, (err, row) => {
-						if (err) { reject(err); }
-						resolve(row);
-					});
-				})
-			}
-	
-			const data = await getData();
-			
-			let mentionSubs = ' '
-			data.forEach(element => {
-				mentionSubs += ('<@' + element.userid + '> ');
-			});
-
-			db.close((err) => {
-				if (err) console.error(err.message);
-				console.log('Close the database connection.');
-			});
-			
-			let yesEntry = [assignPriority(interaction.user.username)];
-			let noEntry = [];
-
-			let timeScheduled = interaction.options.getString('time');
-
-			let [countdownHour, countdownMinute, totalMinutes, epochTime] = getCountdown(timeScheduled);
-
-			let [yesString, noString] = createString(yesEntry, noEntry); //array size
-
-			// Embed 
-			var mainEmbed = new MessageEmbed()
-				.setColor('0xFF6F00')
-				.setTitle('10 Man')
-				.setURL('https://10man.commoncrayon.com/')
-				.setDescription('Join a 10 Man!')
-				.addFields(
-					{ name: 'Time:', value: `<t:${epochTime}>`},
-					{ name: 'Countdown:', value: `Starting in ${countdownHour}H ${countdownMinute}M`},
-					{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
-					{ name: `__No(${noEntry.length}):__`, value: noString, inline: true },
-					{ name: '\u200b', value: "steam://connect/crayon.csgo.fr:27015/fun"})
-				.setFooter({ text:'Server IP: connect crayon.csgo.fr:27015; password fun', iconURL: 'https://i.imgur.com/nuEpvJd.png'})
-
-			
-			// Buttons
-			var buttons = new MessageActionRow().addComponents(
-				new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
-				new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🔸'),
-				new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'),
-				new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")
-				);
-
-			await interaction.reply({content: mentionSubs, embeds: [mainEmbed], components: [buttons]});
-		}
-		 else {
+        if (!adminCheck) {
 			// If user is not admin
 			var deniedEmbed = new MessageEmbed().setColor('0xFF6F00').setTitle('Permission Denied').setDescription('Must be an Admin')
 			await interaction.reply({ embeds: [deniedEmbed], ephemeral: true })
 			return;
 		}
 		
-		console.log(`Schedule triggered by ${interaction.user.tag} in #${interaction.channel.name}.`);
+		let timeScheduled = interaction.options.getString('time');
+		// open the database
+		let db = new sqlite3.Database('./commands/database/subscribers.db', sqlite3.OPEN_READWRITE, (err) => {
+			if (err) console.error(err.message);
+			console.log('Connected to the database.');
+		});
+	
+		// Getting all the rows in the database
+		function getData() {
+			return new Promise((resolve, reject) => {
+				db.all(`SELECT userid FROM subscriber`, (err, row) => {
+					if (err) { reject(err); }
+					resolve(row);
+				});
+			})
+		}
 
-		let timeScheduled = interaction.options.getString('time');	//Getting String for timeScheduled posted in Time embed.
+		const data = await getData();
+		
+		let mentionSubs = ' '
+		data.forEach(element => {
+			mentionSubs += ('<@' + element.userid + '> ');
+		});
+
+		db.close((err) => {
+			if (err) console.error(err.message);
+			console.log('Close the database connection.');
+		});
+		
+		let yesEntry = [assignPriority(interaction.user.username)];
+		let noEntry = [];
+
+
+		let [countdownHour, countdownMinute, totalMinutes, epochTime] = getCountdown(timeScheduled);
+
+		let [yesString, noString] = createString(yesEntry, noEntry); //array size
+
+		// Embed 
+		var mainEmbed = new MessageEmbed()
+			.setColor('0xFF6F00')
+			.setTitle('10 Man')
+			.setURL('https://10man.commoncrayon.com/')
+			.setDescription('Join a 10 Man!')
+			.addFields(
+				{ name: 'Time:', value: `<t:${epochTime}>`},
+				{ name: 'Countdown:', value: `Starting in ${countdownHour}H ${countdownMinute}M`},
+				{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
+				{ name: `__No(${noEntry.length}):__`, value: noString, inline: true },
+				{ name: '\u200b', value: "steam://connect/crayon.csgo.fr:27015/fun"})
+			.setFooter({ text:'Server IP: connect crayon.csgo.fr:27015; password fun', iconURL: 'https://i.imgur.com/nuEpvJd.png'})
+
+		
+		// Buttons
+		var buttons = new MessageActionRow().addComponents(
+			new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
+			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🔸'),
+			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'),
+			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")
+			);
+
+		await interaction.reply({content: mentionSubs, embeds: [mainEmbed], components: [buttons]});
+		
+		console.log(`Schedule triggered by ${interaction.user.tag} in #${interaction.channel.name}.`);
 
 		let reply = await interaction.fetchReply()
 		let doingUpdate = false;
