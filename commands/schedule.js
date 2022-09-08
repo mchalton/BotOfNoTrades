@@ -242,7 +242,22 @@ module.exports = {
 				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
 				let buttons = createButton(); 
 
-				await i.editReply({embeds: [mainEmbed], components: [buttons]});
+				await i.editReply({
+					embeds: [mainEmbed], 
+					components: [buttons]
+				});
+			}
+			else if (buttonClicked === "update") {
+				await i.deferUpdate();
+
+				let [yesString, noString] = createString(yesEntry, noEntry);
+				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry);
+				let buttons = createButton();
+
+				await i.editReply({
+					embeds: [mainEmbed],
+					components: [buttons],
+				});
 			}
 			doingUpdate = false;
 		});;
@@ -283,21 +298,24 @@ function createButton() {
 		var buttons = new MessageActionRow().addComponents(
 			new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
 			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🔸'),
-			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'));
+			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'),
+			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄"));
 	}
 
 	else if (totalMinutes > -15) {
 		var buttons = new MessageActionRow().addComponents(
 			new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
 			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🔸').setDisabled(true),
-			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'));
+			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'),
+			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄"));
 	}
 
 	else {
 		var buttons = new MessageActionRow().addComponents(
 			new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍').setDisabled(true),
 			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🔸').setDisabled(true),
-			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎').setDisabled(true));
+			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎').setDisabled(true),
+			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄").setDisabled(true));
 	}
 	return buttons;
 }
