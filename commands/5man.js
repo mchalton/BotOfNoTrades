@@ -32,7 +32,7 @@ module.exports = {
                 new MessageButton().setCustomId('yes5man').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
                 new MessageButton().setCustomId('maybe5man').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🤷'),
                 new MessageButton().setCustomId('no5man').setLabel('No').setStyle('DANGER').setEmoji('👎'),
-				new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")	
+				//new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")	
             );
 
         await interaction.reply({embeds: [mainEmbed], components: [buttons]});
@@ -123,7 +123,7 @@ function createButton() {
 			new MessageButton().setCustomId('yes5man').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
 			new MessageButton().setCustomId('maybe5man').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🤷'),
 			new MessageButton().setCustomId('no5man').setLabel('No').setStyle('DANGER').setEmoji('👎'),
-			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")
+			//new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")
 		);
 	return buttons;
 }
