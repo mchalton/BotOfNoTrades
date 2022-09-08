@@ -58,6 +58,7 @@ module.exports = {
 		});
 		
 		let yesEntry = [assignPriority(interaction.user.username)];
+		let maybeMention = [];
 		let noEntry = [];
 
 
