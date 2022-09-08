@@ -54,7 +54,7 @@ module.exports = {
 			var maybeMention = [];
 			var noEntry = [];
 
-			timeScheduled = interaction.options.getString('time');
+			let timeScheduled = interaction.options.getString('time');
 
 			var [countdownHour, countdownMinute, totalMinutes, epochTime] = getCountdown(timeScheduled);
 
