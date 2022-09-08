@@ -100,7 +100,6 @@ module.exports = {
 		const doUpdate = async () => {
 			if (doingUpdate) {// doing update, try again later
 				setTimeout(doUpdate, 1000);
-				console.log('Skipping update');
 				return;
 			}
 
