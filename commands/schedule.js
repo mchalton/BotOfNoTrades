@@ -144,7 +144,7 @@ module.exports = {
 
 			let [yesString, noString] = createString(yesEntry, noEntry); //array size
 			let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry);
-			let buttons = createButton();
+			let buttons = createButton(timeScheduled);
 
 			await reply.edit({embeds: [mainEmbed],components: [buttons]});
 
@@ -186,7 +186,7 @@ module.exports = {
 				
 				let [yesString, noString] = createString(yesEntry, noEntry); //array size
 				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
-				let buttons = createButton(); 
+				let buttons = createButton(timeScheduled); 
 
 				await i.editReply({embeds: [mainEmbed], components: [buttons]});
 			}
@@ -214,7 +214,7 @@ module.exports = {
 
 				let [yesString, noString] = createString(yesEntry, noEntry);
 				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
-				let buttons = createButton();
+				let buttons = createButton(timeScheduled);
 
 				await i.editReply({embeds: [mainEmbed], components: [buttons]});
 			}
@@ -238,7 +238,7 @@ module.exports = {
 
 				let [yesString, noString] = createString(yesEntry, noEntry);
 				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
-				let buttons = createButton(); 
+				let buttons = createButton(timeScheduled); 
 
 				await i.editReply({
 					embeds: [mainEmbed], 
@@ -250,7 +250,7 @@ module.exports = {
 
 				let [yesString, noString] = createString(yesEntry, noEntry);
 				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry);
-				let buttons = createButton();
+				let buttons = createButton(timeScheduled);
 
 				await i.editReply({
 					embeds: [mainEmbed],
@@ -289,7 +289,7 @@ function createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry) {
 }
 
 
-function createButton() {
+function createButton(timeScheduled) {
 	const [, , totalMinutes,] = getCountdown(timeScheduled)
 
 	if (totalMinutes > 60 ) {
