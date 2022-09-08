@@ -176,7 +176,7 @@ module.exports = {
 			console.log(`${user} selected ${optionSelected}`);
 
 			if ((i.values) == 'first_option') {
-				await i.deferUpdate();
+				await i.deferReply();
 
 				if (firstOption.indexOf(user) > -1) {
 					firstOption.splice(firstOption.indexOf(user), 1);
@@ -192,7 +192,7 @@ module.exports = {
 			}
 
 			else if ((i.values) == 'second_option') {
-				await i.deferUpdate();
+				await i.deferReply();
 
 				if (secondOption.indexOf(user) > -1) {
 					secondOption.splice(secondOption.indexOf(user), 1);
@@ -208,7 +208,7 @@ module.exports = {
 			}
 
 			else if ((i.values) == 'third_option') {
-				await i.deferUpdate();
+				await i.deferReply();
 
 				if (thirdOption.indexOf(user) > -1) {
 					thirdOption.splice(thirdOption.indexOf(user), 1);
@@ -224,7 +224,7 @@ module.exports = {
 			}
 
 			else if ((i.values) == 'fourth_option') {
-				await i.deferUpdate();
+				await i.deferReply();
 
 				if (fourthOption.indexOf(user) > -1) {
 					fourthOption.splice(fourthOption.indexOf(user), 1);
@@ -240,7 +240,7 @@ module.exports = {
 			}
 
 			else if ((i.values) == 'fifth_option') {
-				await i.deferUpdate();
+				await i.deferReply();
 
 				if (fourthOption.indexOf(user) > -1) {
 					fourthOption.splice(fourthOption.indexOf(user), 1);
