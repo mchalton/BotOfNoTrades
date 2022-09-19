@@ -1,0 +1,20 @@
+name: Execute SSH commmands on remote server
+on:
+  push:
+    branches:
+    - 'dev'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: ubuntu vm
+    steps:
+      - name:
+        uses: JimCronqvist/action-ssh@master
+        with:
+          hosts: ${{ format('{0}@{1}', secrets.SSH_USER, secrets.SSH_HOST) }}
+          privateKey: ${{ secrets.PRIVATE_KEY }}
+          command: |
+           cd BotOfNoTrades
+           git pull
+           npm install
+           pm2 restart 0
