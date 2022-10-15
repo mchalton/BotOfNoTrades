@@ -70,7 +70,6 @@ module.exports = {
 		var mainEmbed = new MessageEmbed()
 			.setColor('0xFF6F00')
 			.setTitle('10 Man')
-			.setURL('steam://connect/54.37.198.140:27015/jont')
 			.setDescription('Join a 10 Man!')
 			.addFields(
 				{ name: 'Time:', value: `<t:${epochTime}>`},
@@ -276,7 +275,6 @@ function createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry) {
 	var mainEmbed = new MessageEmbed()
 		.setColor('0xFF6F00')
 		.setTitle('10 Man')
-		.setURL('steam://connect/54.37.198.140:27015/jont')
 		.setDescription('Join a 10 Man!')
 		.addFields(
 			{ name: 'Time:', value: `<t:${epochTime}>` },
