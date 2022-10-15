@@ -70,21 +70,19 @@ module.exports = {
 		var mainEmbed = new MessageEmbed()
 			.setColor('0xFF6F00')
 			.setTitle('10 Man')
-			.setURL('https://10man.commoncrayon.com/')
 			.setDescription('Join a 10 Man!')
 			.addFields(
 				{ name: 'Time:', value: `<t:${epochTime}>`},
 				{ name: 'Countdown:', value: `Starting in ${countdownHour}H ${countdownMinute}M`},
 				{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
-				{ name: `__No(${noEntry.length}):__`, value: noString, inline: true },
-				{ name: '\u200b', value: "steam://connect/crayon.csgo.fr:27015/fun"})
-			.setFooter({ text:'Server IP: connect crayon.csgo.fr:27015; password fun', iconURL: 'https://i.imgur.com/nuEpvJd.png'})
+				{ name: `__No(${noEntry.length}):__`, value: noString, inline: true })
+			.setFooter({ text:'Server IP: connect 54.37.198.140:27015; password jont'});
 
 		
 		// Buttons
 		var buttons = new MessageActionRow().addComponents(
 			new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
-			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🔸'),
+			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji(''),
 			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'),
 			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")
 			);
@@ -273,18 +271,17 @@ function createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry) {
 	}
 	else {var countdownOutput = (`Started!`);}
 
+	//{ name: '\u200b', value: "steam://connect/54.37.198.140:27015/jont"})
 	var mainEmbed = new MessageEmbed()
 		.setColor('0xFF6F00')
 		.setTitle('10 Man')
-		.setURL('https://10man.commoncrayon.com/')
 		.setDescription('Join a 10 Man!')
 		.addFields(
 			{ name: 'Time:', value: `<t:${epochTime}>` },
 			{ name: 'Countdown:', value: countdownOutput},
 			{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
-			{ name: `__No(${noEntry.length}):__`, value: noString, inline: true },
-			{ name: '\u200b', value: "steam://connect/crayon.csgo.fr:27015/fun"})
-		.setFooter({ text:'Server IP: connect crayon.csgo.fr:27015; password fun', iconURL: 'https://i.imgur.com/nuEpvJd.png'});
+			{ name: `__No(${noEntry.length}):__`, value: noString, inline: true })
+		.setFooter({ text:'Server IP: connect 54.37.198.140:27015; password jont'});
 	return mainEmbed;
 }
 
@@ -295,7 +292,7 @@ function createButton(timeScheduled) {
 	if (totalMinutes > 60 ) {
 		var buttons = new MessageActionRow().addComponents(
 			new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
-			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🔸'),
+			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji(''),
 			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'),
 			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄"));
 	}
@@ -303,7 +300,7 @@ function createButton(timeScheduled) {
 	else if (totalMinutes > -15) {
 		var buttons = new MessageActionRow().addComponents(
 			new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
-			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🔸').setDisabled(true),
+			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('').setDisabled(true),
 			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'),
 			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄"));
 	}
@@ -311,10 +308,11 @@ function createButton(timeScheduled) {
 	else {
 		var buttons = new MessageActionRow().addComponents(
 			new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍').setDisabled(true),
-			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🔸').setDisabled(true),
+			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('').setDisabled(true),
 			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎').setDisabled(true),
 			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄").setDisabled(true));
 	}
+	//🔸
 	return buttons;
 }
 
