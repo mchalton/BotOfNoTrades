@@ -283,8 +283,8 @@ function createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry) {
 			{ name: 'Countdown:', value: countdownOutput},
 			{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
 			{ name: `__No(${noEntry.length}):__`, value: noString, inline: true },
-			{ name: '\u200b', value: "steam://connect/crayon.csgo.fr:27015/fun"})
-		.setFooter({ text:'Server IP: connect crayon.csgo.fr:27015; password fun', iconURL: 'https://i.imgur.com/nuEpvJd.png'});
+			{ name: '\u200b', value: "steam://connect/54.37.198.140:27015/jont"})
+		.setFooter({ text:'Server IP: connect 54.37.198.140:27015; password jont'});
 	return mainEmbed;
 }
 
