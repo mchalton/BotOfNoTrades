@@ -104,14 +104,14 @@ module.exports = {
 
 			const [, , totalMinutes,] = getCountdown(timeScheduled)
 			
-			if ((totalMinutes <= 60) && (maybeMsg1)) {
+			if ((totalMinutes <= 120) && (maybeMsg1)) {
 				let maybeString = ""
 				for (element in maybeMention) {maybeString += (`<@${maybeMention[element]}> `)}
 				if (maybeString != "") await interaction.guild.channels.cache.get(`${secretinfo.channelID}`).send(`Select Yes or No for the 10 man: ${maybeString}`);
 				maybeMsg1 = false;
 			}
 
-			if ((totalMinutes <= 30) && (maybeMsg2)) {
+			if ((totalMinutes <= 60) && (maybeMsg2)) {
 				let maybeString = ""
 
 				function checkMaybe(yesEntry) {
