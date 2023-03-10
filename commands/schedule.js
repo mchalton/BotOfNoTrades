@@ -76,7 +76,7 @@ module.exports = {
 				{ name: 'Countdown:', value: `Starting in ${countdownHour}H ${countdownMinute}M`},
 				{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
 				{ name: `__No(${noEntry.length}):__`, value: noString, inline: true })
-			.setFooter({ text:'Server IP: connect 54.37.198.140:27015; password jont'});
+			.setFooter({ text:`Server IP: connect ${secretinfo.server.serverIP}:27015; password jont`});
 
 		
 		// Buttons
@@ -281,7 +281,7 @@ function createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry) {
 			{ name: 'Countdown:', value: countdownOutput},
 			{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
 			{ name: `__No(${noEntry.length}):__`, value: noString, inline: true })
-		.setFooter({ text:'Server IP: connect 54.37.198.140:27015; password jont'});
+		.setFooter({ text:`Server IP: connect ${secretinfo.server.serverIP}:27015; password jont`});
 	return mainEmbed;
 }
 
