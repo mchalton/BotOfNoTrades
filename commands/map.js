@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 var Rcon = require('rcon');
 const fs = require('fs')
 const request = require('request');
@@ -69,8 +68,8 @@ module.exports = {
                         let mapName = (mapDetails.response.publishedfiledetails[0].title);
                         let mapImage = (mapDetails.response.publishedfiledetails[0].preview_url);
 
-                        var mapEmbed = new MessageEmbed()
-                            .setColor('0xFF6F00')
+                        var mapEmbed = new EmbedBuilder()
+                            .setColor(0xFF6F00)
                             .setTitle(`Successfully Changed Map to: ${mapName}`)
                             .setURL(mapURL)
                             .setImage(mapImage)
@@ -83,8 +82,8 @@ module.exports = {
 
             } catch (error) {
                 console.log(error);
-                var mapEmbed = new MessageEmbed()
-                    .setColor('0xFF6F00')
+                var mapEmbed = new EmbedBuilder()
+                    .setColor(0xFF6F00)
                     .setTitle('Successfully Changed Map to: ' + workshopid)
                     .setURL('https://steamcommunity.com/sharedfiles/filedetails/?id='.concat(workshopid));
 
@@ -95,7 +94,7 @@ module.exports = {
         
         } else {
             // Missing Perms 
-            const deniedEmbed = new MessageEmbed().setColor('0xFF6F00').setTitle('Permission Denied').setDescription('Must be an Admin');
+            const deniedEmbed = new EmbedBuilder().setColor(0xFF6F00).setTitle('Permission Denied').setDescription('Must be an Admin');
             await interaction.reply({embeds: [deniedEmbed], ephemeral: true });
         }
 	},

@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 
@@ -65,8 +64,8 @@ module.exports = {
 
 
 			// Embed 
-			var poolEmbed = new MessageEmbed()
-				.setColor('0xFF6F00')
+			var poolEmbed = new EmbedBuilder()
+				.setColor(0xFF6F00)
 				.setTitle('Retrieved Map: ' + mapName)
 				.setURL('https://steamcommunity.com/sharedfiles/filedetails/?id='.concat(mapID))
 				.setDescription('Workshop ID: ' + mapID)
@@ -79,8 +78,8 @@ module.exports = {
 
 		} else {
 			// Missing Perms 
-			var deniedEmbed = new MessageEmbed()
-				.setColor('0xFF6F00')
+			var deniedEmbed = new EmbedBuilder()
+				.setColor(0xFF6F00)
 				.setTitle('Permission Denied')
 				.setDescription('Must be an Admin')
 

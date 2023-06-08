@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const axios = require('axios');
 const { decode } = require('html-entities');
 
@@ -53,36 +52,36 @@ module.exports = {
 		}
 		
 		// Embed 
-		const triviaEmbed = new MessageEmbed()
+		const triviaEmbed = new EmbedBuilder()
 			.setThumbnail('https://i.imgur.com/cuhu5P2.png')
-			.setColor('0xFF6F00')
+			.setColor(0xFF6F00)
 			.setTitle(category)
 			.setDescription(question)
-			.setFooter(`Difficulty: ${difficulty}`, 'https://i.imgur.com/nuEpvJd.png');
+			.setFooter({ text: `Difficulty: ${difficulty}`, iconURL: 'https://i.imgur.com/nuEpvJd.png'});
 
 		
 		// Buttons
-		var buttons = new MessageActionRow()
+		var buttons = new ActionRowBuilder()
 			.addComponents(
-				new MessageButton()
+				new ButtonBuilder()
 					.setCustomId('A')
 					.setLabel(incorrect_answers[0])
-					.setStyle('PRIMARY'),
+					.setStyle(ButtonStyle.Primary),
 
-				new MessageButton()
+				new ButtonBuilder()
 					.setCustomId('B')
 					.setLabel(incorrect_answers[1])
-					.setStyle('PRIMARY'),
+					.setStyle(ButtonStyle.Primary),
 
-				new MessageButton()
+				new ButtonBuilder()
 					.setCustomId('C')
 					.setLabel(incorrect_answers[2])
-					.setStyle('PRIMARY'),
+					.setStyle(ButtonStyle.Primary),
 
-				new MessageButton()
+				new ButtonBuilder()
 					.setCustomId('D')
 					.setLabel(incorrect_answers[3])
-					.setStyle('PRIMARY'),
+					.setStyle(ButtonStyle.Primary),
 			);
 
 		await interaction.reply({  
@@ -146,34 +145,34 @@ module.exports = {
 			};
 
 
-			var buttons = new MessageActionRow()
+			var buttons = new ActionRowBuilder()
 			.addComponents(
-				new MessageButton()
+				new ButtonBuilder()
 					.setCustomId('A')
 					.setLabel(incorrect_answers[0])
 					.setStyle(buttonStyleA)
 					.setDisabled(true),
 	
-				new MessageButton()
+				new ButtonBuilder()
 					.setCustomId('B')
 					.setLabel(incorrect_answers[1])
 					.setStyle(buttonStyleB)
 					.setDisabled(true),
 	
-				new MessageButton()
+				new ButtonBuilder()
 					.setCustomId('C')
 					.setLabel(incorrect_answers[2])
 					.setStyle(buttonStyleC)
 					.setDisabled(true),
 	
-				new MessageButton()
+				new ButtonBuilder()
 					.setCustomId('D')
 					.setLabel(incorrect_answers[3])
 					.setStyle(buttonStyleD)
 					.setDisabled(true),
 			);
 	
-			await interaction.editReply({
+			interaction.editReply({
 				components: [buttons],
 			});
 		

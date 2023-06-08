@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -10,8 +9,8 @@ module.exports = {
 	async execute(interaction) {
 
         // Embed 
-        var helpEmbed = new MessageEmbed()
-            .setColor('0xFF6F00')
+        var helpEmbed = new EmbedBuilder()
+            .setColor(0xFF6F00)
             .setTitle('BotCrayon')
             .setDescription('I am used to help run the 10mans hosted by Maps Of No Trades.\nI also have a few fun commands!')
             .addFields(

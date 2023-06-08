@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonStyle, ButtonBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -14,8 +13,8 @@ module.exports = {
 		let noEntry = [];
 
         // Embed 
-        let mainEmbed = new MessageEmbed()
-            .setColor('0xFF6F00')
+        let mainEmbed = new EmbedBuilder()
+            .setColor(0xFF6F00)
             .setTitle('5 Man')
             .setDescription('Queue for a 5 Man!')
             .addFields(
@@ -27,12 +26,11 @@ module.exports = {
 
         
         // Buttons
-        let buttons = new MessageActionRow()
+        let buttons = new ActionRowBuilder()
             .addComponents(
-                new MessageButton().setCustomId('yes5man').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
-                new MessageButton().setCustomId('maybe5man').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🤷'),
-                new MessageButton().setCustomId('no5man').setLabel('No').setStyle('DANGER').setEmoji('👎'),
-				//new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")	
+                new ButtonBuilder().setCustomId('yes5man').setLabel('Yes').setStyle(ButtonStyle.Success).setEmoji('👍'),
+                new ButtonBuilder().setCustomId('maybe5man').setLabel('Maybe').setStyle(ButtonStyle.Primary).setEmoji('🤷'),
+                new ButtonBuilder().setCustomId('no5man').setLabel('No').setStyle(ButtonStyle.Danger).setEmoji('👎'),
             );
 
         await interaction.reply({embeds: [mainEmbed], components: [buttons]});
@@ -42,8 +40,7 @@ module.exports = {
 
 		collector.on('collect', async i => {
 
-			try { await i.deferUpdate(); } 
-			catch (error) { console.error("Skipping 'Interaction has already been acknowledged.' Error."); }
+			await i.deferUpdate(); 
 
 			user = (i.user.username);
 			buttonClicked = (i.customId);
@@ -60,7 +57,7 @@ module.exports = {
 				let mainEmbed = createEmbed(yesString, maybeString, noString, yesEntry, maybeEntry, noEntry); 
 				let buttons = createButton();
 
-				await i.editReply({embeds: [mainEmbed], components: [buttons]});
+				i.editReply({embeds: [mainEmbed], components: [buttons]});
 			}
 
 			else if (buttonClicked === "maybe5man" ) {
@@ -74,7 +71,7 @@ module.exports = {
 				let mainEmbed = createEmbed(yesString, maybeString, noString, yesEntry, maybeEntry, noEntry); 
 				let buttons = createButton();
 
-				await i.editReply({embeds: [mainEmbed], components: [buttons]});
+				i.editReply({embeds: [mainEmbed], components: [buttons]});
 			}
 
 			else if (buttonClicked === "no5man") {
@@ -88,14 +85,14 @@ module.exports = {
 				let mainEmbed = createEmbed(yesString, maybeString, noString, yesEntry, maybeEntry, noEntry); 
 				let buttons = createButton(); 
 
-				await i.editReply({embeds: [mainEmbed], components: [buttons]});
+				i.editReply({embeds: [mainEmbed], components: [buttons]});
 			}
 			else if (buttonClicked === "update") {
 				let [yesString, maybeString, noString] = createString(yesEntry, maybeEntry, noEntry);
 				let mainEmbed = createEmbed(yesString, maybeString, noString, yesEntry, maybeEntry, noEntry); 
 				let buttons = createButton(); 
 
-				await i.editReply({embeds: [mainEmbed], components: [buttons]});
+				i.editReply({embeds: [mainEmbed], components: [buttons]});
 			}
 		});;
 	},
@@ -103,8 +100,8 @@ module.exports = {
 
 
 function createEmbed(yesString, maybeString, noString, yesEntry, maybeEntry, noEntry) {
-	let mainEmbed = new MessageEmbed()
-        .setColor('0xFF6F00')
+	let mainEmbed = new EmbedBuilder()
+        .setColor(0xFF6F00)
         .setTitle('5 Man')
         .setDescription('Queue for a 5 Man!')
         .addFields(
@@ -118,12 +115,11 @@ function createEmbed(yesString, maybeString, noString, yesEntry, maybeEntry, noE
 
 
 function createButton() {
-	let buttons = new MessageActionRow()
+	let buttons = new ActionRowBuilder()
 		.addComponents(
-			new MessageButton().setCustomId('yes5man').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
-			new MessageButton().setCustomId('maybe5man').setLabel('Maybe').setStyle('PRIMARY').setEmoji('🤷'),
-			new MessageButton().setCustomId('no5man').setLabel('No').setStyle('DANGER').setEmoji('👎'),
-			//new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")
+			new ButtonBuilder().setCustomId('yes5man').setLabel('Yes').setStyle(ButtonStyle.Success).setEmoji('👍'),
+			new ButtonBuilder().setCustomId('maybe5man').setLabel('Maybe').setStyle(ButtonStyle.Primary).setEmoji('🤷'),
+			new ButtonBuilder().setCustomId('no5man').setLabel('No').setStyle(ButtonStyle.Danger).setEmoji('👎'),
 		);
 	return buttons;
 }

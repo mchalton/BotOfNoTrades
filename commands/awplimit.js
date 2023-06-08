@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 var Rcon = require('rcon');
 const fs = require('fs');
 
@@ -42,13 +41,13 @@ module.exports = {
             conn.connect();
               
             // Send Embed 
-            var startEmbed = new MessageEmbed().setColor('0xFF6F00').setTitle(`Set Awp Limit to: ${number}`);
+            var startEmbed = new EmbedBuilder().setColor(0xFF6F00).setTitle(`Set Awp Limit to: ${number}`);
             await interaction.reply({ embeds: [startEmbed]});
             console.log('Completed /awplimit');
         } 
         else {
             // Missing Perms 
-            var deniedEmbed = new MessageEmbed().setColor('0xFF6F00').setTitle('Permission Denied').setDescription('Must be an Admin');
+            var deniedEmbed = new EmbedBuilder().setColor(0xFF6F00).setTitle('Permission Denied').setDescription('Must be an Admin');
             await interaction.reply({embeds: [deniedEmbed], ephemeral: true });
         }
 	},

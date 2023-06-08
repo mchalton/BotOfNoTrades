@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 var Rcon = require('rcon');
 const fs = require('fs');
 const voice = require('../events/voiceStateUpdate');
@@ -47,7 +46,7 @@ module.exports = {
             connectionEndWarmup.connect();
 
             // Send Embed 
-            var startEmbed = new MessageEmbed().setColor('0xFF6F00').setTitle('Warmup Ended');
+            var startEmbed = new EmbedBuilder().setColor(0xFF6F00).setTitle('Warmup Ended');
             await interaction.reply({ embeds: [startEmbed]})
 
             // === ENDED WARMUP || NOW START MATCH DETAILS MESSAGE
@@ -107,8 +106,8 @@ module.exports = {
                         mapName = (mapDetails.response.publishedfiledetails[0].title);
                         mapImage = (mapDetails.response.publishedfiledetails[0].preview_url);
 
-                        let matchEmbed = new MessageEmbed()
-                            .setColor('0xFF6F00')
+                        let matchEmbed = new EmbedBuilder()
+                            .setColor(0xFF6F00)
                             .setTitle(`10 Man: ${mapName}`)
                             .setURL(mapURL)
                             .setImage(mapImage)
@@ -223,8 +222,8 @@ module.exports = {
 
 
                     // Embed 
-                    let rconEmbed = new MessageEmbed()
-                        .setColor('0xFF6F00')
+                    let rconEmbed = new EmbedBuilder()
+                        .setColor(0xFF6F00)
                         .setTitle(`10 Man: ${mapName}`)
                         .setURL(mapURL)
                         .addFields(
@@ -272,7 +271,7 @@ module.exports = {
         } 
         else {
             // Missing Perms 
-            var deniedEmbed = new MessageEmbed().setColor('0xFF6F00').setTitle('Permission Denied').setDescription('Must be an Admin');
+            var deniedEmbed = new EmbedBuilder().setColor(0xFF6F00).setTitle('Permission Denied').setDescription('Must be an Admin');
             await interaction.reply({embeds: [deniedEmbed], ephemeral: true });
         }
 	},

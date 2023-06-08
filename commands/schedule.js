@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 
@@ -23,7 +22,7 @@ module.exports = {
         
         if (!adminCheck) {
 			// If user is not admin
-			var deniedEmbed = new MessageEmbed().setColor('0xFF6F00').setTitle('Permission Denied').setDescription('Must be an Admin')
+			var deniedEmbed = new EmbedBuilder().setColor(0xFF6F00).setTitle('Permission Denied').setDescription('Must be an Admin')
 			await interaction.reply({ embeds: [deniedEmbed], ephemeral: true })
 			return;
 		}
@@ -67,8 +66,8 @@ module.exports = {
 		let [yesString, noString] = createString(yesEntry, noEntry); //array size
 
 		// Embed 
-		var mainEmbed = new MessageEmbed()
-			.setColor('0xFF6F00')
+		var mainEmbed = new EmbedBuilder()
+			.setColor(0xFF6F00)
 			.setTitle('10 Man')
 			.setDescription('Join a 10 Man!')
 			.addFields(
@@ -76,16 +75,16 @@ module.exports = {
 				{ name: 'Countdown:', value: `Starting in ${countdownHour}H ${countdownMinute}M`},
 				{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
 				{ name: `__No(${noEntry.length}):__`, value: noString, inline: true },
-				{ name: '\u200b', value: "[connect =>](https://jont-connect.azurewebsites.net/api/connect)"})
+				{ name: '\u200b', value: "[Join](https://jont-connect.azurewebsites.net/api/connect)"})
 			.setFooter({ text:`connect ${secretinfo.server.serverIP}:27015; password jont`});
 
 		
 		// Buttons
-		var buttons = new MessageActionRow().addComponents(
-			new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
-			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji(''),
-			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'),
-			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")
+		var buttons = new ActionRowBuilder().addComponents(
+			new ButtonBuilder().setCustomId('yes').setLabel('Yes').setStyle(ButtonStyle.Success).setEmoji('👍'),
+			new ButtonBuilder().setCustomId('maybe').setLabel('Maybe').setStyle(ButtonStyle.Primary),
+			new ButtonBuilder().setCustomId('no').setLabel('No').setStyle(ButtonStyle.Danger).setEmoji('👎'),
+			new ButtonBuilder().setCustomId("update").setStyle(ButtonStyle.Secondary).setEmoji("🔄")
 			);
 
 		await interaction.reply({content: mentionSubs, embeds: [mainEmbed], components: [buttons]});
@@ -187,7 +186,7 @@ module.exports = {
 				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
 				let buttons = createButton(timeScheduled); 
 
-				await i.editReply({embeds: [mainEmbed], components: [buttons]});
+				i.editReply({embeds: [mainEmbed], components: [buttons]});
 			}
 
 			else if (buttonClicked === "maybe" ) {
@@ -215,7 +214,7 @@ module.exports = {
 				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
 				let buttons = createButton(timeScheduled);
 
-				await i.editReply({embeds: [mainEmbed], components: [buttons]});
+				i.editReply({embeds: [mainEmbed], components: [buttons]});
 			}
 
 			else if (buttonClicked === "no") {
@@ -239,7 +238,7 @@ module.exports = {
 				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
 				let buttons = createButton(timeScheduled); 
 
-				await i.editReply({
+				i.editReply({
 					embeds: [mainEmbed], 
 					components: [buttons]
 				});
@@ -251,7 +250,7 @@ module.exports = {
 				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry);
 				let buttons = createButton(timeScheduled);
 
-				await i.editReply({
+				i.editReply({
 					embeds: [mainEmbed],
 					components: [buttons],
 				});
@@ -273,8 +272,8 @@ function createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry) {
 	else {var countdownOutput = (`Started!`);}
 
 	//{ name: '\u200b', value: "steam://connect/54.37.198.140:27015/jont"})
-	var mainEmbed = new MessageEmbed()
-		.setColor('0xFF6F00')
+	var mainEmbed = new EmbedBuilder()
+		.setColor(0xFF6F00)
 		.setTitle('10 Man')
 		.setDescription('Join a 10 Man!')
 		.addFields(
@@ -282,7 +281,7 @@ function createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry) {
 			{ name: 'Countdown:', value: countdownOutput},
 			{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
 			{ name: `__No(${noEntry.length}):__`, value: noString, inline: true },
-			{ name: '\u200b', value: "[connect =>](https://jont-connect.azurewebsites.net/api/connect)"})
+			{ name: '\u200b', value: "[Join](https://jont-connect.azurewebsites.net/api/connect)"})
 		.setFooter({ text:`connect ${secretinfo.server.serverIP}:27015; password jont`});
 	return mainEmbed;
 }
@@ -292,27 +291,27 @@ function createButton(timeScheduled) {
 	const [, , totalMinutes,] = getCountdown(timeScheduled)
 
 	if (totalMinutes > 60 ) {
-		var buttons = new MessageActionRow().addComponents(
-			new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
-			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji(''),
-			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'),
-			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄"));
+		var buttons = new ActionRowBuilder().addComponents(
+			new ButtonBuilder().setCustomId('yes').setLabel('Yes').setStyle(ButtonStyle.Success).setEmoji('👍'),
+			new ButtonBuilder().setCustomId('maybe').setLabel('Maybe').setStyle(ButtonStyle.Primary),
+			new ButtonBuilder().setCustomId('no').setLabel('No').setStyle(ButtonStyle.Danger).setEmoji('👎'),
+			new ButtonBuilder().setCustomId("update").setStyle(ButtonStyle.Secondary).setEmoji("🔄"));
 	}
 
 	else if (totalMinutes > -15) {
-		var buttons = new MessageActionRow().addComponents(
-			new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍'),
-			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('').setDisabled(true),
-			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎'),
-			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄"));
+		var buttons = new ActionRowBuilder().addComponents(
+			new ButtonBuilder().setCustomId('yes').setLabel('Yes').setStyle(ButtonStyle.Success).setEmoji('👍'),
+			new ButtonBuilder().setCustomId('maybe').setLabel('Maybe').setStyle(ButtonStyle.Primary).setDisabled(true),
+			new ButtonBuilder().setCustomId('no').setLabel('No').setStyle(ButtonStyle.Danger).setEmoji('👎'),
+			new ButtonBuilder().setCustomId("update").setStyle(ButtonStyle.Secondary).setEmoji("🔄"));
 	}
 
 	else {
-		var buttons = new MessageActionRow().addComponents(
-			new MessageButton().setCustomId('yes').setLabel('Yes').setStyle('SUCCESS').setEmoji('👍').setDisabled(true),
-			new MessageButton().setCustomId('maybe').setLabel('Maybe').setStyle('PRIMARY').setEmoji('').setDisabled(true),
-			new MessageButton().setCustomId('no').setLabel('No').setStyle('DANGER').setEmoji('👎').setDisabled(true),
-			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄").setDisabled(true));
+		var buttons = new ActionRowBuilder().addComponents(
+			new ButtonBuilder().setCustomId('yes').setLabel('Yes').setStyle(ButtonStyle.Success).setEmoji('👍').setDisabled(true),
+			new ButtonBuilder().setCustomId('maybe').setLabel('Maybe').setStyle(ButtonStyle.Primary).setDisabled(true),
+			new ButtonBuilder().setCustomId('no').setLabel('No').setStyle(ButtonStyle.Danger).setEmoji('👎').setDisabled(true),
+			new ButtonBuilder().setCustomId("update").setStyle(ButtonStyle.Secondary).setEmoji("🔄").setDisabled(true));
 	}
 	//🔸
 	return buttons;
@@ -389,22 +388,6 @@ function getCountdown(timeScheduled) {
 
 function assignPriority(user) {
 	const priority = [
-		"Roald",
-		"linkinblak",
-		"QueeN",
-		"DashBash",
-		"Royal Bacon",
-		"k0vac",
-		"Amajha",
-		"CaJeB3",
-		"ShadowPoor",
-		"Rik",
-		"Jeppi",
-		"Mini",
-		"Porsche",
-		"NinjaM0nk",
-		"CommonCrayon",
-		"Thisted",
 	]; 
 
 	for (var i = 0; i < priority.length; i++) {

@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const sqlite3 = require('sqlite3').verbose();
 
 module.exports = {
@@ -52,8 +51,8 @@ module.exports = {
 
 
 		// Embed 
-		var poolEmbed = new MessageEmbed()
-			.setColor('0xFF6F00')
+		var poolEmbed = new EmbedBuilder()
+			.setColor(0xFF6F00)
 			.setTitle('10 Man Map Pool')
 			.setURL('https://10man.commoncrayon.com/')
 			.setDescription('Map Pool of ' + data.length + ' maps!')

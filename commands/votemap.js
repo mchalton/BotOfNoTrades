@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageActionRow, MessageEmbed, MessageSelectMenu } = require('discord.js');
+const { ActionRowBuilder, EmbedBuilder, MessageSelectMenu, SlashCommandBuilder } = require('discord.js');
 const sqlite3 = require('sqlite3').verbose();
 
 module.exports = {
@@ -114,8 +113,8 @@ module.exports = {
 
 
 			// Embed 
-			var poolEmbed = new MessageEmbed()
-				.setColor('0xFF6F00')
+			var poolEmbed = new EmbedBuilder()
+				.setColor(0xFF6F00)
 				.setTitle('Vote on Map to Play!')
 				.addFields(
 					{ name: '🔸\n' + String(map1.name) + '\n' + 'https://steamcommunity.com/sharedfiles/filedetails/?id='.concat(map1.id), value: '\u200b'},
@@ -125,7 +124,7 @@ module.exports = {
 					{ name: '🔸\n' + String(map5.name) + '\n'  + 'https://steamcommunity.com/sharedfiles/filedetails/?id='.concat(map5.id), value: '\u200b'})
 				.setTimestamp();
 
-			const dropdown = new MessageActionRow()
+			const dropdown = new ActionRowBuilder()
 			.addComponents(
 				new MessageSelectMenu()
 					.setCustomId('select')
@@ -146,8 +145,8 @@ module.exports = {
 
 		} else {
 			// Missing Perms 
-			var deniedEmbed = new MessageEmbed()
-				.setColor('0xFF6F00')
+			var deniedEmbed = new EmbedBuilder()
+				.setColor(0xFF6F00)
 				.setTitle('Permission Denied')
 				.setDescription('Must be an Admin')
 
@@ -188,7 +187,7 @@ module.exports = {
 				let [firstString, secondString, thirdString, fourthString, fifthString] = createString(firstOption, secondOption, thirdOption, fourthOption, fifthOption);
 				let poolEmbed = createEmbed(firstString, secondString, thirdString, fourthString, fifthString);
 
-				await i.editReply({embeds: [poolEmbed]}) 
+				i.editReply({embeds: [poolEmbed]}) 
 			}
 
 			else if ((i.values) == 'second_option') {
@@ -204,7 +203,7 @@ module.exports = {
 				let [firstString, secondString, thirdString, fourthString, fifthString] = createString(firstOption, secondOption, thirdOption, fourthOption, fifthOption);
 				let poolEmbed = createEmbed(firstString, secondString, thirdString, fourthString, fifthString);
 
-				await i.editReply({embeds: [poolEmbed]}) 
+				i.editReply({embeds: [poolEmbed]}) 
 			}
 
 			else if ((i.values) == 'third_option') {
@@ -220,7 +219,7 @@ module.exports = {
 				let [firstString, secondString, thirdString, fourthString, fifthString] = createString(firstOption, secondOption, thirdOption, fourthOption, fifthOption);
 				let poolEmbed = createEmbed(firstString, secondString, thirdString, fourthString, fifthString);
 
-				await i.editReply({embeds: [poolEmbed]}) 
+				i.editReply({embeds: [poolEmbed]}) 
 			}
 
 			else if ((i.values) == 'fourth_option') {
@@ -236,7 +235,7 @@ module.exports = {
 				let [firstString, secondString, thirdString, fourthString, fifthString] = createString(firstOption, secondOption, thirdOption, fourthOption, fifthOption);
 				let poolEmbed = createEmbed(firstString, secondString, thirdString, fourthString, fifthString);
 
-				await i.editReply({embeds: [poolEmbed]}) 
+				i.editReply({embeds: [poolEmbed]}) 
 			}
 
 			else if ((i.values) == 'fifth_option') {
@@ -252,7 +251,7 @@ module.exports = {
 				let [firstString, secondString, thirdString, fourthString, fifthString] = createString(firstOption, secondOption, thirdOption, fourthOption, fifthOption);
 				let poolEmbed = createEmbed(firstString, secondString, thirdString, fourthString, fifthString);
 
-				await i.editReply({embeds: [poolEmbed]}) 
+				i.editReply({embeds: [poolEmbed]}) 
 			}
 		});
 
@@ -265,8 +264,8 @@ module.exports = {
 
 function createEmbed(firstOption, secondOption, thirdOption, fourthOption, fifthOption) {
 
-	const poolEmbed = new MessageEmbed()
-	.setColor('0xFF6F00')
+	const poolEmbed = new EmbedBuilder()
+	.setColor(0xFF6F00)
 	.setTitle('Vote on a Map to Play!')
 	.addFields(
 		{ name: '🔸\n' + String(map1.name) + '\n' + 'https://steamcommunity.com/sharedfiles/filedetails/?id='.concat(map1.id), value: firstOption },

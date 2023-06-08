@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 var Rcon = require('rcon');
 const fs = require('fs');
 
@@ -41,7 +40,7 @@ module.exports = {
             conn.connect();
 
             // Send Embed 
-            var startEmbed = new MessageEmbed().setColor('0xFF6F00').setTitle('Started Wingman Game');
+            var startEmbed = new EmbedBuilder().setColor(0xFF6F00).setTitle('Started Wingman Game');
             await interaction.reply({ embeds: [startEmbed]})
 
 
@@ -50,7 +49,7 @@ module.exports = {
         } 
         else {
             // Missing Perms 
-            var deniedEmbed = new MessageEmbed().setColor('0xFF6F00').setTitle('Permission Denied').setDescription('Must be an Admin');
+            var deniedEmbed = new EmbedBuilder().setColor(0xFF6F00).setTitle('Permission Denied').setDescription('Must be an Admin');
             await interaction.reply({embeds: [deniedEmbed], ephemeral: true });
         }
 	},

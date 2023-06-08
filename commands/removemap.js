@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const sqlite3 = require('sqlite3').verbose();
 
 module.exports = {
@@ -49,8 +48,8 @@ module.exports = {
 
 
 			// Embed 
-			var removeEmbed = new MessageEmbed()
-				.setColor('0xFF6F00')
+			var removeEmbed = new EmbedBuilder()
+				.setColor(0xFF6F00)
 				.setTitle('Successfully Removed Map: ' + workshopid)
 				.setTimestamp();
 
@@ -58,8 +57,8 @@ module.exports = {
 
 		} else {
 			// Missing Perms 
-			var deniedEmbed = new MessageEmbed()
-				.setColor('0xFF6F00')
+			var deniedEmbed = new EmbedBuilder()
+				.setColor(0xFF6F00)
 				.setTitle('Permission Denied')
 				.setDescription('Must be an Admin')
 
