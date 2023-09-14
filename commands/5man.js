@@ -22,13 +22,13 @@ module.exports = {
 
 		collector.on('collect', async i => {
 
-			await i.deferUpdate(); 
 
 			const user = (i.user.displayName);
 			const buttonClicked = (i.customId);
 			console.log(`5man Button Clicked:\n   User: ${user}\n   ButtonClicked: ${buttonClicked}`);
 
-			if (buttonClicked === "yes5man" ) {				
+			if (buttonClicked === "yes5man" ) {	
+				await i.deferUpdate(); 			
 				if (yesEntry.indexOf(user) > -1) {
 					//return;
 				}
@@ -51,6 +51,7 @@ module.exports = {
 			}
 
 			else if (buttonClicked === "maybe5man" ) {
+				await i.deferUpdate(); 
 				
 				if (yesEntry.indexOf(user) > -1) {
 					yesEntry[yesEntry.indexOf(user)] = (user + " 🔸");
@@ -73,7 +74,8 @@ module.exports = {
 				await i.editReply({embeds: [mainEmbed], components: [buttons]});
 			}
 
-			else if (buttonClicked === "no5man") {				
+			else if (buttonClicked === "no5man") {		
+				await i.deferUpdate(); 		
 				if (yesEntry.indexOf(user) > -1) {
 					yesEntry.splice(yesEntry.indexOf(user), 1);
 					noEntry.push(user);
