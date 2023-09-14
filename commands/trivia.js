@@ -94,10 +94,10 @@ module.exports = {
 		var correctEntries = [];
 		var incorrectEntries = [];
 
-		var buttonStyleA = 'PRIMARY'
-		var buttonStyleB = 'PRIMARY'
-		var buttonStyleC = 'PRIMARY'
-		var buttonStyleD = 'PRIMARY'
+		var buttonStyleA = ButtonStyle.Primary
+		var buttonStyleB = ButtonStyle.Primary
+		var buttonStyleC = ButtonStyle.Primary
+		var buttonStyleD = ButtonStyle.Primary
 
 		collector.on('collect', async i => {
 
@@ -129,19 +129,19 @@ module.exports = {
 			console.log("Ended Trivia Message");
 
 			if (corAnsNum === 0){
-				buttonStyleA = 'SUCCESS'
+				buttonStyleA = ButtonStyle.Success
 			}
 
 			else if (corAnsNum === 1){
-				buttonStyleB = 'SUCCESS'
+				buttonStyleB = ButtonStyle.Success
 			}
 
 			else if (corAnsNum === 2){
-				buttonStyleC = 'SUCCESS'
+				buttonStyleC = ButtonStyle.Success
 			}
 
 			else if (corAnsNum === 3){
-				buttonStyleD = 'SUCCESS'
+				buttonStyleD = ButtonStyle.Success
 			};
 
 
@@ -172,7 +172,7 @@ module.exports = {
 					.setDisabled(true),
 			);
 	
-			interaction.editReply({
+			await interaction.editReply({
 				components: [buttons],
 			});
 		

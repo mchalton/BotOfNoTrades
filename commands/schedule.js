@@ -56,7 +56,7 @@ module.exports = {
 			console.log('Close the database connection.');
 		});
 		
-		let yesEntry = [assignPriority(interaction.user.username)];
+		let yesEntry = [assignPriority(interaction.user.displayName)];
 		let maybeMention = [];
 		let noEntry = [];
 
@@ -75,7 +75,7 @@ module.exports = {
 				{ name: 'Countdown:', value: `Starting in ${countdownHour}H ${countdownMinute}M`},
 				{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
 				{ name: `__No(${noEntry.length}):__`, value: noString, inline: true },
-				{ name: '\u200b', value: "[Join](https://jont-connect.azurewebsites.net/api/connect)"})
+				{ name: '\u200b', value: "[connect to server](https://jont-connect.azurewebsites.net/api/connect)"})
 			.setFooter({ text:`connect ${secretinfo.server.serverIP}:27015; password jont`});
 
 		
@@ -159,7 +159,7 @@ module.exports = {
 
 			doingUpdate = true;
 			
-			user = (i.user.username);
+			user = (i.user.displayName);
 			buttonClicked = (i.customId);
 
 			user = assignPriority(user);
@@ -186,7 +186,7 @@ module.exports = {
 				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
 				let buttons = createButton(timeScheduled); 
 
-				i.editReply({embeds: [mainEmbed], components: [buttons]});
+				await i.editReply({embeds: [mainEmbed], components: [buttons]});
 			}
 
 			else if (buttonClicked === "maybe" ) {
@@ -214,7 +214,7 @@ module.exports = {
 				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
 				let buttons = createButton(timeScheduled);
 
-				i.editReply({embeds: [mainEmbed], components: [buttons]});
+				await i.editReply({embeds: [mainEmbed], components: [buttons]});
 			}
 
 			else if (buttonClicked === "no") {
@@ -238,7 +238,7 @@ module.exports = {
 				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
 				let buttons = createButton(timeScheduled); 
 
-				i.editReply({
+				await i.editReply({
 					embeds: [mainEmbed], 
 					components: [buttons]
 				});
@@ -250,7 +250,7 @@ module.exports = {
 				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry);
 				let buttons = createButton(timeScheduled);
 
-				i.editReply({
+				await i.editReply({
 					embeds: [mainEmbed],
 					components: [buttons],
 				});
@@ -281,7 +281,7 @@ function createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry) {
 			{ name: 'Countdown:', value: countdownOutput},
 			{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
 			{ name: `__No(${noEntry.length}):__`, value: noString, inline: true },
-			{ name: '\u200b', value: "[Join](https://jont-connect.azurewebsites.net/api/connect)"})
+			{ name: '\u200b', value: "[connect to server](https://jont-connect.azurewebsites.net/api/connect)"})
 		.setFooter({ text:`connect ${secretinfo.server.serverIP}:27015; password jont`});
 	return mainEmbed;
 }
