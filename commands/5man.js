@@ -24,13 +24,13 @@ module.exports = {
 
 			await i.deferUpdate(); 
 
-			user = (i.user.displayName);
-			buttonClicked = (i.customId);
+			const user = (i.user.displayName);
+			const buttonClicked = (i.customId);
 			console.log(`5man Button Clicked:\n   User: ${user}\n   ButtonClicked: ${buttonClicked}`);
 
 			if (buttonClicked === "yes5man" ) {				
 				if (yesEntry.indexOf(user) > -1) {
-					return;
+					//return;
 				}
 				else if (yesEntry.indexOf(user + " 🔸") > -1) {
 					yesEntry[yesEntry.indexOf(user + " 🔸")] = (user);
@@ -56,7 +56,7 @@ module.exports = {
 					yesEntry[yesEntry.indexOf(user)] = (user + " 🔸");
 				}
 				else if (yesEntry.indexOf(user + " 🔸") > -1) {
-					return;
+					//return;
 				}
 				else if (noEntry.indexOf(user) > -1) {
 					noEntry.splice(noEntry.indexOf(user), 1);
@@ -83,19 +83,12 @@ module.exports = {
 					noEntry.push(user);
 				}
 				else if (noEntry.indexOf(user) > -1) {
-					return;
+					//return;
 				}
 				else {
 					noEntry.push(user);
 				}
 
-				let [yesString, noString] = createString(yesEntry, noEntry);
-				let mainEmbed = createEmbed(yesString, noString, yesEntry, noEntry); 
-				let buttons = createButton(); 
-
-				await i.editReply({embeds: [mainEmbed], components: [buttons]});
-			}
-			else if (buttonClicked === "update") {
 				let [yesString, noString] = createString(yesEntry, noEntry);
 				let mainEmbed = createEmbed(yesString, noString, yesEntry, noEntry); 
 				let buttons = createButton(); 
