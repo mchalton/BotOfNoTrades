@@ -18,7 +18,8 @@ module.exports = {
         await interaction.reply({embeds: [mainEmbed], components: [buttons]});
 
 		const interactionTimeout = (360 * 60 * 1000); // 6 hours
-		const collector = interaction.channel.createMessageComponentCollector({time: interactionTimeout});
+		let reply = await interaction.fetchReply()
+		const collector = reply.createMessageComponentCollector({time: interactionTimeout});
 
 		collector.on('collect', async i => {
 
