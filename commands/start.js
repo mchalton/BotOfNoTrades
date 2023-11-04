@@ -1,17 +1,8 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-var Rcon = require('rcon');
 const fs = require('fs');
-const voice = require('../events/voiceStateUpdate');
-const request = require('request');
+const axios = require('axios');
 
 let secretinfo = JSON.parse(fs.readFileSync('commands/database/secretinfo.json'));
-
-// Sleep Function
-function sleep(ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-}
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -30,30 +21,69 @@ module.exports = {
         if (adminCheck) {
             console.log('Commencing /start');
 
-            const connectionEndWarmup = new Rcon((secretinfo.server.serverIP), 27015, (secretinfo.server.serverPassword));
-
-            // GET MAP NAME AND THUMBNAIL
-            connectionEndWarmup.on('auth', function() {
-                connectionEndWarmup.send("mp_warmup_end");
-                connectionEndWarmup.disconnect();
-
-                }).on('error', function(err) {
-                    console.log("Error: " + err);
-
-                }).on('end', function() {
-                    console.log("Ended start");
+		    await interaction.deferReply();
+            
+            const username = secretinfo.server.username;
+            const password = secretinfo.server.password;
+            const url = 'https://dathost.net/api/0.1/game-servers';
+            const auth_header = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+            const list_response = await axios.get(url, {
+                headers: {
+                    'authorization': auth_header
+                }
             });
-            connectionEndWarmup.connect();
+            let server_id = '';
+            const serverList = list_response.data;
+            for (const serverIndex in serverList) {
+                const server = serverList[serverIndex];
+                if (server.name === 'Jack Of No Trades') {
+                    server_id = server.id;
+                    break;
+                }
+            }
+
+            if (server_id.length == 0) {
+                await interaction.editReply('Failed to find server');
+                return;
+            }
+
+            const server_url = url + `/${server_id}/console`;            
+            
+            const formData = new FormData();
+            formData.append('line', 'mp_warmup_end');
+
+            const map_response = await axios.post(server_url, formData, {
+                headers:  {
+                    'Content-Type': 'multipart/form-data',
+                    'authorization': auth_header
+                }
+            });
+
+            if (map_response.status != 200) {
+                await interaction.editReply('Failed to end warmup');
+                return;
+            }
 
             // Send Embed 
             var startEmbed = new EmbedBuilder().setColor(0xFF6F00).setTitle('Warmup Ended');
-            await interaction.reply({ embeds: [startEmbed]})
+            await interaction.editReply({ embeds: [startEmbed]})
 
             // === ENDED WARMUP || NOW START MATCH DETAILS MESSAGE
 
             // Getting workshop id of the map being currently played.
-            const connectionStatus = new Rcon((secretinfo.server.serverIP), 27015, (secretinfo.server.serverPassword)); 
-            let workshopid = '';
+            /*let workshopid = '';
+
+            const statusData = new FormData();
+            statusData.append('line', 'status');
+
+            const status_response = await axios.post(server_url, statusData, {
+                headers:  {
+                    'Content-Type': 'multipart/form-data',
+                    'authorization': auth_header
+                }
+            });
+
+
 
             connectionStatus.on('auth', function() {
                 connectionStatus.send("status");
@@ -117,10 +147,10 @@ module.exports = {
 
                     } catch (error) {console.log("request():\n" + error);}
                 });
-            }
+            }*/
 
             // LOOP FOR 30 SECONDS FOR GAME MATCH SCORES
-            let timerId = setTimeout(function tick() {
+            /*let timerId = setTimeout(function tick() {
                 
                 // Get match score from the server
                 const connectionScore = new Rcon((secretinfo.server.serverIP), 27015, (secretinfo.server.serverPassword));
@@ -266,7 +296,7 @@ module.exports = {
                 }
                 sendDelayMsg();
 
-            }, 30000);
+            }, 30000);*/
             console.log('Completed /start');
         } 
         else {

@@ -1,28 +1,19 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-//var Rcon = require('rcon');
 const fs = require('fs')
-const request = require('request');
 const axios = require('axios');
 
 let secretinfo = JSON.parse(fs.readFileSync('commands/database/secretinfo.json'));
 
-let wid = {
-    set current(name) {
-      this.log = (name);
-    },
-    log: String
-  }
-
 module.exports = {
     data: new SlashCommandBuilder()
 		.setName('map')
-		.setDescription('Change map on the server')
-        .addStringOption(option => option.setName('name').setDescription('Enter the name of the map').setRequired(true)),
+		.setDescription('Change the map on the server')
+        .addStringOption(option => option.setName('id').setDescription('Map ID').setRequired(true)),
 
 
 	async execute(interaction) {
 
-        const mapname = interaction.options.getString('name');
+        const map_id = interaction.options.getString('id');
 
         // Checking if user is an admin
 		let adminJson = JSON.parse(fs.readFileSync('./commands/database/admin.json'));
@@ -32,7 +23,7 @@ module.exports = {
 		}
         
         if (adminCheck) {
-            console.log("Running /map " + mapname);
+            console.log("Running /map " + map_id);
         
 		    await interaction.deferReply();
 
@@ -44,7 +35,6 @@ module.exports = {
                 const auth_header = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
                 const list_response = await axios.get(url, {
                     headers: {
-                    //	'accept': 'application/json',
                         'authorization': auth_header
                     }
                 });
@@ -63,11 +53,37 @@ module.exports = {
                     return;
                 }
 
-                const server_url = url + `/${server_id}/console`;
+                /*
+                // cleanup old maps
+                const filelist_url = url + `/${server_id}/files?hide_default_files=false&include_deleted_files=false&path=maps%2Fworkshop&with_filesizes=true`;
+                const filelist_response = await axios.get(filelist_url, {
+                    headers:  {
+                        'authorization': auth_header
+                    }
+                });
 
+                if (filelist_response.status == 200) {
+                    
+                    const data = filelist_response.data;
+                    data.forEach(async (item) => {
+                        if (item.size == 4096 && item.path != (map_id + '/')) { // is folder
+                            console.log(`Deleting ${item.path}`);
+                            const delete_url = url + `/${server_id}/files/maps%2Fworkshop/${item.path}`;
+                            const del_response = await axios.delete(delete_url, {
+                                headers:  {
+                                    'authorization': auth_header
+                                }
+                            });
+                            if (del_response.status != 200) {
+                                console.log('Failed to clear workshop cache');
+                            }
+                        }
+                    });
+                }*/
+
+                const server_url = url + `/${server_id}/console`;
                 const formData = new FormData();
-                formData.append('line', `rcon map ${mapname}`);
-                //console.log(formData.getHeaders());
+                formData.append('line', `host_workshop_map ${map_id}`);
 
                 const map_response = await axios.post(server_url, formData, {
                     headers:  {
@@ -81,164 +97,59 @@ module.exports = {
                     return;
                 }
 
+                /*setTimeout(async () => {                
+                    const formData2 = new FormData();
+                    formData2.append('line', `exec prac`);
+
+                    
+                    await axios.post(server_url, formData2, {
+                        headers:  {
+                            'Content-Type': 'multipart/form-data',
+                            'authorization': auth_header
+                        }
+                    });
+                }, 10000);*/
+                
+                const workshop_url = "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/";
+                const workshop_data = new FormData();
+                workshop_data.append('itemcount', '1');
+                workshop_data.append('publishedfileids[0]', `${map_id}`);
+                
+                const workshop_response = await axios.post(workshop_url, workshop_data);
+                
+                try {
+                    let mapDetails = JSON.parse(JSON.stringify(workshop_response.data));
+
+                    let mapURL = (`https://steamcommunity.com/sharedfiles/filedetails/?id=${map_id}`);
+                    let mapName = (mapDetails.response.publishedfiledetails[0].title);
+                    let mapImage = (mapDetails.response.publishedfiledetails[0].preview_url);
+
+                    var mapEmbed = new EmbedBuilder()
+                        .setColor(0xFF6F00)
+                        .setTitle(`Successfully Changed Map to: ${mapName}`)
+                        .setURL(mapURL)
+                        .setImage(mapImage)
+                        .setFooter({ text: `Workshop ID: ${map_id}` });
+                    
+                    await interaction.editReply({ embeds: [mapEmbed],})
+
+                } catch (error) {
+                    console.log("request():\n" + error);
+                    await interaction.editReply("Map changed to '" + map_id + "'");
+                }
+
             }
             catch (error) {
                 console.log(error);
                 await interaction.editReply('Map change failed (2)');
                 return;
             }
-            await interaction.editReply("Map changed to '" + mapname + "'");
-            console.log('Completed /map');
-
-            /*const conn = new Rcon((secretinfo.server.serverIP), 27015, (secretinfo.server.serverPassword));
-
-            conn.once('auth', function() {
-                conn.send(('host_workshop_map ').concat(workshopid));
-                conn.disconnect();
-
-                }).on('error', function(err) {
-                    console.log("Error: " + err);
-
-                }).on('end', function() {
-                    console.log("Ended map");    
-            });
-            conn.connect();
-
-            try {
-                var options = {
-                    'method': 'POST',
-                    'url': 'https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/',
-                    'headers': {
-                    },
-                    formData: {
-                    'itemcount': '1',
-                    'publishedfileids[0]': `${workshopid}`
-                    }
-                };
-                
-                request(options, async function (error, response) {
-                    if (error) throw new Error(error);
-                    try {
-                        let mapDetails = JSON.parse(response.body);
-
-                        let mapURL = (`https://steamcommunity.com/sharedfiles/filedetails/?id=${workshopid}`);
-                        let mapName = (mapDetails.response.publishedfiledetails[0].title);
-                        let mapImage = (mapDetails.response.publishedfiledetails[0].preview_url);
-
-                        var mapEmbed = new EmbedBuilder()
-                            .setColor(0xFF6F00)
-                            .setTitle(`Successfully Changed Map to: ${mapName}`)
-                            .setURL(mapURL)
-                            .setImage(mapImage)
-                            .setFooter({ text: `Workshop ID: ${workshopid}` });
-                        
-                        await interaction.reply({ embeds: [mapEmbed],})
-
-                    } catch (error) {console.log("request():\n" + error);}
-                });
-
-            } catch (error) {
-                console.log(error);
-                var mapEmbed = new EmbedBuilder()
-                    .setColor(0xFF6F00)
-                    .setTitle('Successfully Changed Map to: ' + workshopid)
-                    .setURL('https://steamcommunity.com/sharedfiles/filedetails/?id='.concat(workshopid));
-
-                await interaction.reply({ embeds: [mapEmbed],})
-            }
-
-            console.log('Completed /map');*/
-        
+            console.log('Completed /map');        
         } else {
             // Missing Perms 
             const deniedEmbed = new EmbedBuilder().setColor(0xFF6F00).setTitle('Permission Denied').setDescription('Must be an Admin');
             await interaction.reply({embeds: [deniedEmbed], ephemeral: true });
         }
 	},
-	/*data: new SlashCommandBuilder()
-		.setName('map')
-		.setDescription('Change map on the server')
-        .addStringOption(option => option.setName('workshopid').setDescription('Enter a Workshop ID').setRequired(true)),
-
-
-	async execute(interaction) {
-
-        const workshopid = interaction.options.getString('workshopid');
-
-        // Checking if user is an admin
-		let adminJson = JSON.parse(fs.readFileSync('./commands/database/admin.json'));
-		let adminCheck = false;
-		for (let i = 0; i < adminJson.admins.length; i++) {
-			if ((adminJson.admins[i].userid) == (interaction.user.id)) adminCheck = true;
-		}
-        
-        if (adminCheck) {
-            console.log("Commencing /map " + workshopid);
-
-            const conn = new Rcon((secretinfo.server.serverIP), 27015, (secretinfo.server.serverPassword));
-
-            conn.once('auth', function() {
-                conn.send(('host_workshop_map ').concat(workshopid));
-                conn.disconnect();
-
-                }).on('error', function(err) {
-                    console.log("Error: " + err);
-
-                }).on('end', function() {
-                    console.log("Ended map");    
-            });
-            conn.connect();
-
-            try {
-                var options = {
-                    'method': 'POST',
-                    'url': 'https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/',
-                    'headers': {
-                    },
-                    formData: {
-                    'itemcount': '1',
-                    'publishedfileids[0]': `${workshopid}`
-                    }
-                };
-                
-                request(options, async function (error, response) {
-                    if (error) throw new Error(error);
-                    try {
-                        let mapDetails = JSON.parse(response.body);
-
-                        let mapURL = (`https://steamcommunity.com/sharedfiles/filedetails/?id=${workshopid}`);
-                        let mapName = (mapDetails.response.publishedfiledetails[0].title);
-                        let mapImage = (mapDetails.response.publishedfiledetails[0].preview_url);
-
-                        var mapEmbed = new EmbedBuilder()
-                            .setColor(0xFF6F00)
-                            .setTitle(`Successfully Changed Map to: ${mapName}`)
-                            .setURL(mapURL)
-                            .setImage(mapImage)
-                            .setFooter({ text: `Workshop ID: ${workshopid}` });
-                        
-                        await interaction.reply({ embeds: [mapEmbed],})
-
-                    } catch (error) {console.log("request():\n" + error);}
-                });
-
-            } catch (error) {
-                console.log(error);
-                var mapEmbed = new EmbedBuilder()
-                    .setColor(0xFF6F00)
-                    .setTitle('Successfully Changed Map to: ' + workshopid)
-                    .setURL('https://steamcommunity.com/sharedfiles/filedetails/?id='.concat(workshopid));
-
-                await interaction.reply({ embeds: [mapEmbed],})
-            }
-
-            console.log('Completed /map');
-        
-        } else {
-            // Missing Perms 
-            const deniedEmbed = new EmbedBuilder().setColor(0xFF6F00).setTitle('Permission Denied').setDescription('Must be an Admin');
-            await interaction.reply({embeds: [deniedEmbed], ephemeral: true });
-        }
-	},*/
 };
 

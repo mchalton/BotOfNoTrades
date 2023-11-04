@@ -29,14 +29,14 @@ module.exports = {
                 { name: '/start', value: 'Start a 10 Man Game' },
                 { name: '/map', value: 'Change Map on the 10 Man Server' },
                 { name: '/rcon', value: 'Send a Commands to the 10 Man Server' },
-                { name: '/awplimit', value: 'Sets AWP limit on the Server' },
+                //{ name: '/awplimit', value: 'Sets AWP limit on the Server' },
                 { name: '/wingman', value: 'Starts a Wingman Game\n' },
 
-                { name: '/pool', value: 'Displays the Map Pool' },
-                { name: '/addmap', value: 'Adds a Map to the Map Pool' },
-                { name: '/removemap', value: 'Removes a Map to the Map Pool' },
-                { name: '/votemap', value: 'Vote on 5 Random Maps' },
-                { name: '/spinmap', value: 'Gets One Random Map' },
+               // { name: '/pool', value: 'Displays the Map Pool' },
+                //{ name: '/addmap', value: 'Adds a Map to the Map Pool' },
+                //{ name: '/removemap', value: 'Removes a Map to the Map Pool' },
+                //{ name: '/votemap', value: 'Vote on 5 Random Maps' },
+                //{ name: '/spinmap', value: 'Gets One Random Map' },
             )
             .setFooter({ text: 'Made By CommonCrayon', iconURL: 'https://imgur.com/a/P0Ef644' })
             .setTimestamp();
