@@ -33,12 +33,16 @@ module.exports = {
                 const password = secretinfo.server.password;
                 const url = 'https://dathost.net/api/0.1/game-servers';
                 const auth_header = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+
+                const server_id = '651693489e3eacfd1fdb8698';
+
+                /*
+                let server_id = '';
                 const list_response = await axios.get(url, {
                     headers: {
                         'authorization': auth_header
                     }
                 });
-                let server_id = '';
                 const serverList = list_response.data;
                 for (const serverIndex in serverList) {
                     const server = serverList[serverIndex];
@@ -51,7 +55,7 @@ module.exports = {
                 if (server_id.length == 0) {
                     await interaction.editReply('Failed to find server');
                     return;
-                }
+                }*/
 
                 /*
                 // cleanup old maps

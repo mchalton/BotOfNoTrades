@@ -1,5 +1,6 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-var Rcon = require('rcon');
+
+const axios = require('axios');
 const fs = require('fs');
 
 let secretinfo = JSON.parse(fs.readFileSync('commands/database/secretinfo.json'));
@@ -22,29 +23,59 @@ module.exports = {
         if (adminCheck) {
             console.log('Commencing /wingman');
 
-            const conn = new Rcon((secretinfo.server.serverIP), 27015, (secretinfo.server.serverPassword));
-
-            // Executing wingman config
-            conn.on('auth', function() {
-                conn.send("exec gamemode_competitive2v2");
-                conn.send("mp_warmup_end");
-                conn.disconnect();
-
-                }).on('error', function(err) {
-                    console.log("Wingman cfg Command Error: " + err);
-
-                }).on('end', function() {
-                    console.log("Ended wingman");
-            });
             
-            conn.connect();
+            try {
+            
+                const username = secretinfo.server.username;
+                const password = secretinfo.server.password;
+                const url = 'https://dathost.net/api/0.1/game-servers';
+                const auth_header = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+                const server_id = '651693489e3eacfd1fdb8698';
+
+                const server_url = url + `/${server_id}/console`;
+
+                const formData1 = new FormData();
+                formData1.append('line', 'exec gamemode_competitive2v2');
+
+                const gamemode_response = await axios.post(server_url, formData1, {
+                    headers:  {
+                        'Content-Type': 'multipart/form-data',
+                        'authorization': auth_header
+                    }
+                });
+
+                if (gamemode_response.status != 200) {
+                    await interaction.editReply('Failed to change gamemode (1)');
+                    return;
+                }
+
+                
+                const formData2 = new FormData();
+                formData2.append('line', 'mp_warmup_end');
+
+                const start_response = await axios.post(server_url, formData2, {
+                    headers:  {
+                        'Content-Type': 'multipart/form-data',
+                        'authorization': auth_header
+                    }
+                });
+
+                if (start_response.status != 200) {
+                    await interaction.editReply('Failed to end warmup (2)');
+                    return;
+                }
+
+            }
+            catch (error) {
+                console.log(error);
+                await interaction.editReply('Failed to run /wingman (3)');
+                return;
+            }
 
             // Send Embed 
             var startEmbed = new EmbedBuilder().setColor(0xFF6F00).setTitle('Started Wingman Game');
             await interaction.reply({ embeds: [startEmbed]})
 
-
-            conn.emit('end');
             console.log('Completed /wingman');
         } 
         else {

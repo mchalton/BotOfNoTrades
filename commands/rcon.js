@@ -1,5 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-//var Rcon = require('rcon');
+
 const fs = require('fs')
 const axios = require('axios');
 
@@ -41,7 +41,9 @@ module.exports = {
                 const password = secretinfo.server.password;
                 const url = 'https://dathost.net/api/0.1/game-servers';
                 const auth_header = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
-                const list_response = await axios.get(url, {
+                const server_id = '651693489e3eacfd1fdb8698';
+
+                /*const list_response = await axios.get(url, {
                     headers: {
                     //	'accept': 'application/json',
                         'authorization': auth_header
@@ -60,7 +62,7 @@ module.exports = {
                 if (server_id.length == 0) {
                     await interaction.editReply('Failed to find server');
                     return;
-                }
+                }*/
 
                 const server_url = url + `/${server_id}/console`;
 
@@ -86,7 +88,7 @@ module.exports = {
                 await interaction.editReply('Rcon failed (2)');
                 return;
             }
-            await interaction.editReply("Command sent successfully");
+            await interaction.editReply("Command sent successfully (" + command + ")");
             console.log('Completed /rcon');        
         } else {
             // Missing Perms 
