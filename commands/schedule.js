@@ -75,7 +75,7 @@ module.exports = {
 				{ name: 'Countdown:', value: `Starting in ${countdownHour}H ${countdownMinute}M`},
 				{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
 				{ name: `__No(${noEntry.length}):__`, value: noString, inline: true },
-				{ name: '\u200b\u200b', value: "[Join Server](https://jont-connect.azurewebsites.net/api/connect)"})
+				{ name: '\u200b\u200b', value: "[Join Server](https://jont-connect.azurewebsites.net/api/connect?v=2)"})
 			.setFooter({ text:`connect ${secretinfo.server.serverIP}:${secretinfo.server.serverPort}; password jont`});
 
 
@@ -281,7 +281,7 @@ function createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry) {
 			{ name: 'Countdown:', value: countdownOutput},
 			{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
 			{ name: `__No(${noEntry.length}):__`, value: noString, inline: true },
-			{ name: '\u200b', value: "[Join Server](https://jont-connect.azurewebsites.net/api/connect)"})
+			{ name: '\u200b', value: "[Join Server](https://jont-connect.azurewebsites.net/api/connect?v=2)"})
 			.setFooter({ text:`connect ${secretinfo.server.serverIP}:${secretinfo.server.serverPort}; password jont`});
 	return mainEmbed;
 }
