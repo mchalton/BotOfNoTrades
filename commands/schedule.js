@@ -10,7 +10,145 @@ module.exports = {
 		.setDescription('Schedules 10man!')
 		.addStringOption(option => option.setName('time').setDescription('Enter a Time (20:30)').setRequired(true)),
 
-	async execute(interaction) {
+	async execute(interaction) {		
+
+		const getCountdown = (timeScheduled) => {
+			const scheduledTimeArray = timeScheduled.split(":");
+
+			const serverTime = new Date();
+			const timeInEurope = new Date(serverTime.toLocaleString('en-US', { timeZone: 'Europe/Paris'}));
+			const diff = timeInEurope.getTime() - serverTime.getTime();
+			const hoursApprox = (diff / (1000 * 60 * 60));
+
+			const hourOffset = Math.round(hoursApprox);
+
+
+			var currServerTime = new Date();
+			var currentHour = currServerTime.getHours();  //CHANGE FOR CET/CEST
+			var currentMinute = currServerTime.getMinutes();
+			
+			var currentTime = (currentHour*60 + currentMinute);
+			
+			var scheduledHour = parseInt(scheduledTimeArray[0], 10)- hourOffset;
+			var scheduledMinute = parseInt(scheduledTimeArray[1], 10);
+
+			var currentTimeInt = parseInt(currentTime, 10);
+			
+			const scheduledTotalMin = ((scheduledHour )*60 + scheduledMinute);
+			
+			const diffMinutes = (scheduledTotalMin - currentTimeInt);
+			
+			countdownHour = Math.floor(diffMinutes / 60);
+			countdownMinute = (diffMinutes - countdownHour*60);
+
+			// Get Epoch Time
+			var epochTime = new Date();
+			epochTime.setHours(scheduledHour , scheduledMinute, 0, 0); // CET/CEST might change things!
+			var epochTime = String(epochTime.getTime());
+			epochTime = epochTime.slice(0, -3)
+
+			return [countdownHour, countdownMinute, diffMinutes, epochTime];
+		}
+
+				
+		const createEmbed = async (timeScheduled, yesEntry, noEntry, maybeMention, interaction) => {
+
+			const createString = async (yesEntry, noEntry, maybeMention, interaction) => {
+				const getUserName = async (userID, interaction) => {
+					await interaction.channel.guild.members.fetch(userID).then((user) => {
+						return user.user.username;
+					});
+				}
+
+				// For Yes
+				if (yesEntry.length == 0) yesString = "Empty";
+				else {
+					yesString = "";
+					for (var l = 0; l < yesEntry.length; l++) {
+
+						let username = await getUserName(yesEntry[l], interaction);
+						if (maybeMention.includes(yesEntry[l]))
+							username += " 🔸"
+
+						if (l == 9) {
+							yesString = (yesString + username + '\n🔹➖➖➖➖🔹\n');
+						}
+						else {
+							yesString = (yesString + username + '\n');
+						}
+						
+					}
+				}
+
+				// For No
+				if (noEntry.length == 0) noString = "Empty";
+				else {
+					noString = "";
+					for (var l = 0; l < noEntry.length; l++) {
+						let username = await getUserName(noEntry[l], interaction);
+						noString = (noString + username + '\n');
+					}
+				}
+
+				return [yesString, noString];
+			}
+
+			let [yesString, noString] = await createString(yesEntry, noEntry, maybeMention, interaction); //array size
+
+			let [countdownHour, countdownMinute, totalMinutes, epochTime] = getCountdown(timeScheduled);
+
+			if (totalMinutes > 0) {
+				if (countdownHour == 0) {var countdownOutput = (`Starting in ${countdownMinute} Minutes`);}
+				else {var countdownOutput = (`Starting in ${countdownHour}H ${countdownMinute}M`);}
+			}
+			else {var countdownOutput = (`Started!`);}
+
+			var mainEmbed = new EmbedBuilder()
+				.setColor(0xFF6F00)
+				.setTitle('10 Man')
+				.setDescription('Join a 10 Man!')
+				.addFields(
+					{ name: 'Time:', value: `<t:${epochTime}>` },
+					{ name: 'Countdown:', value: countdownOutput},
+					{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
+					{ name: `__No(${noEntry.length}):__`, value: noString, inline: true },
+					{ name: '\u200b', value: "[Join Server](https://jont-connect.azurewebsites.net/api/connect?v=2)"})
+					.setFooter({ text:`connect ${secretinfo.server.serverIP}:${secretinfo.server.serverPort}; password jont`});
+			return mainEmbed;
+		}
+
+
+		const createButton = (timeScheduled) => {
+			const [, , totalMinutes,] = getCountdown(timeScheduled)
+
+			if (totalMinutes > 60 ) {
+				var buttons = new ActionRowBuilder().addComponents(
+					new ButtonBuilder().setCustomId('yes').setLabel('Yes').setStyle(ButtonStyle.Success).setEmoji('👍'),
+					new ButtonBuilder().setCustomId('maybe').setLabel('Maybe').setStyle(ButtonStyle.Primary),
+					new ButtonBuilder().setCustomId('no').setLabel('No').setStyle(ButtonStyle.Danger).setEmoji('👎'),
+					new ButtonBuilder().setCustomId("update").setStyle(ButtonStyle.Secondary).setEmoji("🔄"));
+			}
+
+			else if (totalMinutes > -15) {
+				var buttons = new ActionRowBuilder().addComponents(
+					new ButtonBuilder().setCustomId('yes').setLabel('Yes').setStyle(ButtonStyle.Success).setEmoji('👍'),
+					new ButtonBuilder().setCustomId('maybe').setLabel('Maybe').setStyle(ButtonStyle.Primary).setDisabled(true),
+					new ButtonBuilder().setCustomId('no').setLabel('No').setStyle(ButtonStyle.Danger).setEmoji('👎'),
+					new ButtonBuilder().setCustomId("update").setStyle(ButtonStyle.Secondary).setEmoji("🔄"));
+			}
+
+			else {
+				var buttons = new ActionRowBuilder().addComponents(
+					new ButtonBuilder().setCustomId('yes').setLabel('Yes').setStyle(ButtonStyle.Success).setEmoji('👍').setDisabled(true),
+					new ButtonBuilder().setCustomId('maybe').setLabel('Maybe').setStyle(ButtonStyle.Primary).setDisabled(true),
+					new ButtonBuilder().setCustomId('no').setLabel('No').setStyle(ButtonStyle.Danger).setEmoji('👎').setDisabled(true),
+					new ButtonBuilder().setCustomId("update").setStyle(ButtonStyle.Secondary).setEmoji("🔄").setDisabled(true));
+			}
+			//🔸
+			return buttons;
+		}
+
+
         // Checking if user is an admin
 		let adminJson = JSON.parse(fs.readFileSync('./commands/database/admin.json'));
 		let adminCheck = false;
@@ -56,29 +194,12 @@ module.exports = {
 			console.log('Close the database connection.');
 		});
 		
-		let yesEntry = [assignPriority(interaction.user.displayName)];
+		let yesEntry = [interaction.user.id];
 		let maybeMention = [];
 		let noEntry = [];
 
 
-		let [countdownHour, countdownMinute, totalMinutes, epochTime] = getCountdown(timeScheduled);
-
-		let [yesString, noString] = createString(yesEntry, noEntry); //array size
-
-		// Embed 
-		var mainEmbed = new EmbedBuilder()
-			.setColor(0xFF6F00)
-			.setTitle('10 Man')
-			.setDescription('Join a 10 Man!')
-			.addFields(
-				{ name: 'Time:', value: `<t:${epochTime}>`},
-				{ name: 'Countdown:', value: `Starting in ${countdownHour}H ${countdownMinute}M`},
-				{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
-				{ name: `__No(${noEntry.length}):__`, value: noString, inline: true },
-				{ name: '\u200b\u200b', value: "[Join Server](https://jont-connect.azurewebsites.net/api/connect?v=2)"})
-			.setFooter({ text:`connect ${secretinfo.server.serverIP}:${secretinfo.server.serverPort}; password jont`});
-
-
+		let mainEmbed = await createEmbed(timeScheduled, yesEntry, noEntry, maybeMention, interaction);
 		
 		// Buttons
 		var buttons = new ActionRowBuilder().addComponents(
@@ -113,36 +234,29 @@ module.exports = {
 			}
 
 			if ((totalMinutes <= 60) && (maybeMsg2)) {
-				let maybeString = ""
-
-				function checkMaybe(yesEntry) {
-					for (element in yesEntry) {
-						if ((yesEntry[element]).includes('🔸')) {
-							return true;
-						}
+				// add to no list
+				for(var i = 0; i < yesEntry.length; i++) {
+					if (maybeMention.includes(yesEntry[i])) {	
+						noEntry.push(yesEntry[i]);	
 					}
-					return false;
+				}
+				// remove from yes list
+				yesEntry = yesEntry.filter((value) => { return !maybeMention.includes(value); });
+
+				let maybeString = ""
+				for(var i = 0; i < maybeMention.length; i++) {
+					maybeString += (`<@${maybeMention[i]}> `);
 				}
 
-				do {
-					for (element in yesEntry) {
-						if ((yesEntry[element]).includes('🔸')) {
-							
-							let nopush = yesEntry[element];
-		
-							yesEntry.splice(element, 1);
-							noEntry.push(nopush.slice(0, -3));
-						}
-					}
-				} while (checkMaybe(yesEntry));
+				if (maybeString != "") {
+					await interaction.guild.channels.cache.get(`${secretinfo.channelID}`).send(`Moved to No: ${maybeString}`);
+				}
 
-				for (element in maybeMention) {maybeString += (`<@${maybeMention[element]}> `)}
-				if (maybeString != "") await interaction.guild.channels.cache.get(`${secretinfo.channelID}`).send(`Moved to No: ${maybeString}`);
-				maybeMsg2 = false;
+				// don't run again
+				maybeMsg2 = false;				
 			}
 
-			let [yesString, noString] = createString(yesEntry, noEntry); //array size
-			let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry);
+			let mainEmbed = await createEmbed(timeScheduled, yesEntry, noEntry, maybeMention, i);
 			let buttons = createButton(timeScheduled);
 
 			await reply.edit({embeds: [mainEmbed],components: [buttons]});
@@ -158,33 +272,22 @@ module.exports = {
 
 		collector.on('collect', async i => {
 
-			doingUpdate = true;
+			let doingUpdate = true;
 			
-			user = (i.user.displayName);
-			buttonClicked = (i.customId);
-
-			user = assignPriority(user);
+			const user = i.user.id;
+			const buttonClicked = (i.customId);
 
 			if (buttonClicked === "yes" ) {
 				await i.deferUpdate();
 
-				if (yesEntry.indexOf(user) > -1) return;
+				// remove from no and maybe list
+				maybeMention = maybeMention.filter((id) => id != user );
+				noEntry = noEntry.filter((id) => id != user );
 
-				else if (yesEntry.indexOf(user + " 🔸") > -1) {
-					yesEntry[yesEntry.indexOf(user + " 🔸")] = user;
-					if ((maybeMention.indexOf(i.user.id)) !== -1) maybeMention.splice((maybeMention.indexOf(i.user.id)), 1);
-				}
-
-				else if (noEntry.indexOf(user) > -1) {
-					noEntry.splice(noEntry.indexOf(user), 1);
+				if (!yesEntry.includes(user))
 					yesEntry.push(user);
-				}
-
-				else yesEntry.push(user);
-
 				
-				let [yesString, noString] = createString(yesEntry, noEntry); //array size
-				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
+				let mainEmbed = await createEmbed(timeScheduled, yesEntry, noEntry, maybeMention, i); 
 				let buttons = createButton(timeScheduled); 
 
 				await i.editReply({embeds: [mainEmbed], components: [buttons]});
@@ -193,26 +296,16 @@ module.exports = {
 			else if (buttonClicked === "maybe" ) {
 				await i.deferUpdate();
 
-				if (yesEntry.indexOf(user) > -1) {
-					yesEntry[yesEntry.indexOf(user)] = (user + " 🔸");
-					maybeMention.push(i.user.id);
-				}
+				// remove from no list
+				noEntry = noEntry.filter((id) => id != user );
 
-				else if (yesEntry.indexOf(user + " 🔸") > -1) return;
+				// should be in both yes and maybe
+				if (!yesEntry.includes(user))
+					yesEntry.push(user);				
+				if (!maybeMention.includes(user))
+					maybeMention.push(user);
 
-				else if (noEntry.indexOf(user) > -1) {
-					noEntry.splice(noEntry.indexOf(user), 1);
-					yesEntry.push(user + " 🔸");
-					maybeMention.push(i.user.id);
-				}
-
-				else {
-					yesEntry.push(user + " 🔸");
-					maybeMention.push(i.user.id);
-				}
-
-				let [yesString, noString] = createString(yesEntry, noEntry);
-				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
+				let mainEmbed = await createEmbed(timeScheduled, yesEntry, noEntry, maybeMention, i); 
 				let buttons = createButton(timeScheduled);
 
 				await i.editReply({embeds: [mainEmbed], components: [buttons]});
@@ -221,22 +314,14 @@ module.exports = {
 			else if (buttonClicked === "no") {
 				await i.deferUpdate();
 
-				if (yesEntry.indexOf(user) > -1) {
-					yesEntry.splice(yesEntry.indexOf(user), 1);
+				// remove from yes and maybe list
+				yesEntry = yesEntry.filter((id) => id != user );
+				maybeMention = maybeMention.filter((id) => id != user );
+
+				if (!noEntry.includes(user))
 					noEntry.push(user);
-				}
 
-				else if (yesEntry.indexOf(user + " 🔸") > -1) {
-					yesEntry.splice(yesEntry.indexOf(user + " 🔸"), 1);
-					noEntry.push(user);
-					if ((maybeMention.indexOf(i.user.id)) !== -1) maybeMention.splice((maybeMention.indexOf(i.user.id)), 1);
-				}
-
-				else if (noEntry.indexOf(user) > -1) return;
-				else noEntry.push(user);
-
-				let [yesString, noString] = createString(yesEntry, noEntry);
-				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry); 
+				let mainEmbed = await createEmbed(timeScheduled, yesEntry, noEntry, maybeMention, i); 
 				let buttons = createButton(timeScheduled); 
 
 				await i.editReply({
@@ -247,8 +332,7 @@ module.exports = {
 			else if (buttonClicked === "update") {
 				await i.deferUpdate();
 
-				let [yesString, noString] = createString(yesEntry, noEntry);
-				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry);
+				let mainEmbed = await createEmbed(timeScheduled, yesEntry, noEntry, maybeMention, i);
 				let buttons = createButton(timeScheduled);
 
 				await i.editReply({
@@ -261,137 +345,3 @@ module.exports = {
 	},
 };
 
-
-function createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry) {
-
-	let [countdownHour, countdownMinute, totalMinutes, epochTime] = getCountdown(timeScheduled);
-
-	if (totalMinutes > 0) {
-		if (countdownHour == 0) {var countdownOutput = (`Starting in ${countdownMinute} Minutes`);}
-		else {var countdownOutput = (`Starting in ${countdownHour}H ${countdownMinute}M`);}
-	}
-	else {var countdownOutput = (`Started!`);}
-
-	var mainEmbed = new EmbedBuilder()
-		.setColor(0xFF6F00)
-		.setTitle('10 Man')
-		.setDescription('Join a 10 Man!')
-		.addFields(
-			{ name: 'Time:', value: `<t:${epochTime}>` },
-			{ name: 'Countdown:', value: countdownOutput},
-			{ name: `__Yes(${yesEntry.length}):__`, value: yesString, inline: true},
-			{ name: `__No(${noEntry.length}):__`, value: noString, inline: true },
-			{ name: '\u200b', value: "[Join Server](https://jont-connect.azurewebsites.net/api/connect?v=2)"})
-			.setFooter({ text:`connect ${secretinfo.server.serverIP}:${secretinfo.server.serverPort}; password jont`});
-	return mainEmbed;
-}
-
-
-function createButton(timeScheduled) {
-	const [, , totalMinutes,] = getCountdown(timeScheduled)
-
-	if (totalMinutes > 60 ) {
-		var buttons = new ActionRowBuilder().addComponents(
-			new ButtonBuilder().setCustomId('yes').setLabel('Yes').setStyle(ButtonStyle.Success).setEmoji('👍'),
-			new ButtonBuilder().setCustomId('maybe').setLabel('Maybe').setStyle(ButtonStyle.Primary),
-			new ButtonBuilder().setCustomId('no').setLabel('No').setStyle(ButtonStyle.Danger).setEmoji('👎'),
-			new ButtonBuilder().setCustomId("update").setStyle(ButtonStyle.Secondary).setEmoji("🔄"));
-	}
-
-	else if (totalMinutes > -15) {
-		var buttons = new ActionRowBuilder().addComponents(
-			new ButtonBuilder().setCustomId('yes').setLabel('Yes').setStyle(ButtonStyle.Success).setEmoji('👍'),
-			new ButtonBuilder().setCustomId('maybe').setLabel('Maybe').setStyle(ButtonStyle.Primary).setDisabled(true),
-			new ButtonBuilder().setCustomId('no').setLabel('No').setStyle(ButtonStyle.Danger).setEmoji('👎'),
-			new ButtonBuilder().setCustomId("update").setStyle(ButtonStyle.Secondary).setEmoji("🔄"));
-	}
-
-	else {
-		var buttons = new ActionRowBuilder().addComponents(
-			new ButtonBuilder().setCustomId('yes').setLabel('Yes').setStyle(ButtonStyle.Success).setEmoji('👍').setDisabled(true),
-			new ButtonBuilder().setCustomId('maybe').setLabel('Maybe').setStyle(ButtonStyle.Primary).setDisabled(true),
-			new ButtonBuilder().setCustomId('no').setLabel('No').setStyle(ButtonStyle.Danger).setEmoji('👎').setDisabled(true),
-			new ButtonBuilder().setCustomId("update").setStyle(ButtonStyle.Secondary).setEmoji("🔄").setDisabled(true));
-	}
-	//🔸
-	return buttons;
-}
-
-
-function createString(yesEntry, noEntry) {
-	// For Yes
-	if (yesEntry.length == 0) yesString = "Empty";
-	else {
-		yesString = "";
-		for (var l = 0; l < yesEntry.length; l++) {
-			if (l == 9) {
-				yesString = (yesString + yesEntry[l] + '\n🔹➖➖➖➖🔹\n');
-			}
-			else {
-				yesString = (yesString + yesEntry[l] + '\n');
-			}
-			
-		}
-	}
-
-	// For No
-	if (noEntry.length == 0) noString = "Empty";
-	else {
-		noString = "";
-		for (var l = 0; l < noEntry.length; l++) {
-			noString = (noString + noEntry[l] + '\n');
-		}
-	}
-
-	return [yesString, noString];
-}
-
-
-function getCountdown(timeScheduled) {
-    const scheduledTimeArray = timeScheduled.split(":");
-
-	const serverTime = new Date();
-	const timeInEurope = new Date(serverTime.toLocaleString('en-US', { timeZone: 'Europe/Paris'}));
-	const diff = timeInEurope.getTime() - serverTime.getTime();
-	const hoursApprox = (diff / (1000 * 60 * 60));
-
-	const hourOffset = Math.round(hoursApprox);
-
-
-    var currServerTime = new Date();
-    var currentHour = currServerTime.getHours();  //CHANGE FOR CET/CEST
-    var currentMinute = currServerTime.getMinutes();
-    
-    var currentTime = (currentHour*60 + currentMinute);
-    
-    var scheduledHour = parseInt(scheduledTimeArray[0], 10)- hourOffset;
-    var scheduledMinute = parseInt(scheduledTimeArray[1], 10);
-
-    var currentTimeInt = parseInt(currentTime, 10);
-    
-    const scheduledTotalMin = ((scheduledHour )*60 + scheduledMinute);
-    
-    const diffMinutes = (scheduledTotalMin - currentTimeInt);
-    
-    countdownHour = Math.floor(diffMinutes / 60);
-    countdownMinute = (diffMinutes - countdownHour*60);
-
-	// Get Epoch Time
-	var epochTime = new Date();
-	epochTime.setHours(scheduledHour , scheduledMinute, 0, 0); // CET/CEST might change things!
-	var epochTime = String(epochTime.getTime());
-	epochTime = epochTime.slice(0, -3)
-
-    return [countdownHour, countdownMinute, diffMinutes, epochTime];
-}
-
-
-function assignPriority(user) {
-	const priority = [
-	]; 
-
-	for (var i = 0; i < priority.length; i++) {
-		if (user === priority[i]) {user = "🎗️" + user};
-	}
-	return user;
-}
