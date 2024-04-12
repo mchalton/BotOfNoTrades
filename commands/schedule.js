@@ -55,15 +55,15 @@ module.exports = {
 
 			const createString = async (yesEntry, noEntry, maybeMention, interaction) => {
 				const getUserName = async (userID, interaction) => {
-					await interaction.channel.guild.members.fetch(userID).then((user) => {
-						return user.user.username;
-					});
+					const user = await interaction.channel.guild.members.fetch(userID);
+					return user.displayName;
 				}
 
+				let yesString = "";
+				let noString = "";
 				// For Yes
 				if (yesEntry.length == 0) yesString = "Empty";
 				else {
-					yesString = "";
 					for (var l = 0; l < yesEntry.length; l++) {
 
 						let username = await getUserName(yesEntry[l], interaction);
@@ -83,7 +83,6 @@ module.exports = {
 				// For No
 				if (noEntry.length == 0) noString = "Empty";
 				else {
-					noString = "";
 					for (var l = 0; l < noEntry.length; l++) {
 						let username = await getUserName(noEntry[l], interaction);
 						noString = (noString + username + '\n');
@@ -256,7 +255,7 @@ module.exports = {
 				maybeMsg2 = false;				
 			}
 
-			let mainEmbed = await createEmbed(timeScheduled, yesEntry, noEntry, maybeMention, i);
+			let mainEmbed = await createEmbed(timeScheduled, yesEntry, noEntry, maybeMention, interaction);
 			let buttons = createButton(timeScheduled);
 
 			await reply.edit({embeds: [mainEmbed],components: [buttons]});
@@ -266,13 +265,14 @@ module.exports = {
 		}
 		setTimeout(doUpdate, 60000);
 
+		const [, , totalMinutes,] = getCountdown(timeScheduled)
 		const totalMinutesNum = totalMinutes;
 		const interactionTimeout = (30 + totalMinutesNum) * 60 * 1000;
 		const collector = reply.createMessageComponentCollector({time: interactionTimeout});
 
 		collector.on('collect', async i => {
 
-			let doingUpdate = true;
+			doingUpdate = true;
 			
 			const user = i.user.id;
 			const buttonClicked = (i.customId);
