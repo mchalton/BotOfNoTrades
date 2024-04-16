@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonStyle, ButtonBuilder, EmbedBuilder } = require('discord.js');
+require('log-timestamp');
 
 module.exports = {
 	data: new SlashCommandBuilder()

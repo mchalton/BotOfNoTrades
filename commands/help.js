@@ -31,6 +31,7 @@ module.exports = {
                 { name: '/rcon', value: 'Send a Commands to the 10 Man Server' },
                 //{ name: '/awplimit', value: 'Sets AWP limit on the Server' },
                 { name: '/wingman', value: 'Starts a Wingman Game\n' },
+                { name: '/restartserver', value: 'Restart the 10 Man Server\n' },
 
                // { name: '/pool', value: 'Displays the Map Pool' },
                 //{ name: '/addmap', value: 'Adds a Map to the Map Pool' },

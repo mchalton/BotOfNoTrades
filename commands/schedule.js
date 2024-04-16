@@ -2,6 +2,7 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommand
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 const admin = require('../shared/admin.js');
+require('log-timestamp');
 
 let secretinfo = JSON.parse(fs.readFileSync('commands/database/secretinfo.json'));
 
@@ -37,9 +38,16 @@ module.exports = {
 
 			const data = await getData();
 
+			// cross reference with users in the server
+			const users = interaction.guild.members.cache;
 			let mentionSubs = ' ';
 			data.forEach(element => {
-				mentionSubs += ('<@' + element.userid + '> ');
+				for (let i = 0; i < users.length; i++) {
+					if (users[i].id == element.userid) {
+						mentionSubs += ('<@' + element.userid + '> ');
+						break;
+					}
+				};
 			});
 
 			db.close((err) => {
