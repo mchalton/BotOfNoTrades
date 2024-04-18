@@ -42,12 +42,9 @@ module.exports = {
 			const users = interaction.guild.members.cache;
 			let mentionSubs = ' ';
 			data.forEach(element => {
-				for (let i = 0; i < users.length; i++) {
-					if (users[i].id == element.userid) {
-						mentionSubs += ('<@' + element.userid + '> ');
-						break;
-					}
-				};
+				if (users.has(element.userid)) {
+					mentionSubs += ('<@' + element.userid + '> ');
+				}
 			});
 
 			db.close((err) => {
