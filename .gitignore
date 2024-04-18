@@ -9,3 +9,4 @@ data/
 log.txt
 commands/database/secretinfo.json
 commands/database/secretinfo-live.json
+commands/database/subscribers.db
