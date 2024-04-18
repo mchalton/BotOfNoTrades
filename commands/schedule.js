@@ -212,9 +212,16 @@ module.exports = {
 			if (doingUpdate) {// doing update, try again later
 				setTimeout(doUpdate, 1000);
 				return;
-			}
+			}			
 
 			const [, , totalMinutes,] = getCountdown(timeScheduled)
+			if (totalMinutes >= -20) {
+				setTimeout(doUpdate, 60000); // queue next update
+			}
+			else { // stop updating when time 
+				console.log("Ending Update on Schedule Message");
+				return;
+			}
 			
 			if ((totalMinutes <= 120) && (maybeMsg1)) {
 				let maybeString = "";				
@@ -252,9 +259,6 @@ module.exports = {
 			let buttons = createButtons();
 
 			await reply.edit({embeds: [mainEmbed],components: [buttons]});
-
-			if (totalMinutes >= -20) setTimeout(doUpdate, 60000); // stop updating when time 
-			else console.log("Ending Update on Schedule Message");
 		}
 		setTimeout(doUpdate, 60000);
 
