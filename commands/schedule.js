@@ -38,9 +38,7 @@ module.exports = {
 
 			const data = await getData();
 
-			// cross reference with users in the server
-			//const users = interaction.guild.members.cache;
-			
+			// cross reference with users in the server			
 			let mentionSubs = ' ';
 			for (let i = 0; i < data.length; i++) {
 				const isMember = await interaction.guild.members.fetch(data[i].userid).then(() => true).catch(() => false);
