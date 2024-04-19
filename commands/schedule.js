@@ -39,12 +39,12 @@ module.exports = {
 			const data = await getData();
 
 			// cross reference with users in the server
-			const users = interaction.guild.members.cache;
+			//const users = interaction.guild.members.cache;
 			let mentionSubs = ' ';
 			data.forEach(element => {
-				if (users.has(element.userid)) {
+				//if (users.has(element.userid)) {
 					mentionSubs += ('<@' + element.userid + '> ');
-				}
+				//}
 			});
 
 			db.close((err) => {
