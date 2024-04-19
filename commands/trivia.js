@@ -6,7 +6,12 @@ module.exports = {
 	data: new SlashCommandBuilder().setName('trivia').setDescription('Play a Trivia Question!'),
 
 	async execute(interaction) {
-
+		
+		let category = "";
+		let difficulty = "";
+		let question = "";
+		let correct_answer = "";
+		let incorrect_answers = []
 		// Get Trivia question
 		if (Math.random() < 0.5) {
 			const res = await axios.get('https://the-trivia-api.com/api/questions?limit=11', {
@@ -17,11 +22,11 @@ module.exports = {
 				
 			const info = (res.data[0]);
 		
-			var category = (info.category);
-			var correct_answer = (info.correctAnswer);
-			var incorrect_answers = (info.incorrectAnswers.slice(0,3));
-			var question = (info.question);
-			var difficulty = ("N/A");
+			category = (info.category);
+			correct_answer = (info.correctAnswer);
+			incorrect_answers = (info.incorrectAnswers.slice(0,3));
+			question = (info.question);
+			difficulty = ("N/A");
 		}
 	
 		else {
@@ -33,11 +38,13 @@ module.exports = {
 				
 			const info = (res.data.results[0]);
 	
-			var category = decode(info.category);
-			var difficulty = decode(info.difficulty);
-			var question = decode(info.question);
-			var correct_answer = decode(info.correct_answer);
-			var incorrect_answers = decode(info.incorrect_answers);
+			category = decode(info.category);
+			difficulty = decode(info.difficulty);
+			question = decode(info.question);
+			correct_answer = decode(info.correct_answer);
+
+			for (let i = 0; i < info.incorrect_answers.length; i++)
+				incorrect_answers.push(decode(info.incorrect_answers[i]));
 		}
 
 		// Shuffle the correct answer into the correct answer.
