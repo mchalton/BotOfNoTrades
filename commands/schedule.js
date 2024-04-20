@@ -41,10 +41,10 @@ module.exports = {
 			// cross reference with users in the server			
 			let mentionSubs = ' ';
 			for (let i = 0; i < data.length; i++) {
-				const isMember = await interaction.guild.members.fetch(data[i].userid).then(() => true).catch(() => false);
-				if (isMember) {
+				//const isMember = await interaction.guild.members.fetch(data[i].userid).then(() => true).catch(() => false);
+				//if (isMember) {
 					mentionSubs += ('<@' + data[i].userid + '> ');
-				}
+				//}
 			}
 
 			db.close((err) => {
