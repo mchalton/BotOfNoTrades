@@ -37,15 +37,19 @@ module.exports = {
 			}
 
 			const data = await getData();
-
-			// cross reference with users in the server			
+	
 			let mentionSubs = ' ';
-			for (let i = 0; i < data.length; i++) {
-				//const isMember = await interaction.guild.members.fetch(data[i].userid).then(() => true).catch(() => false);
-				//if (isMember) {
-					mentionSubs += ('<@' + data[i].userid + '> ');
-				//}
-			}
+			await interaction.guild.members.fetch().then(async(members) => {						
+				// cross reference with users in the server		
+				for  (let i = 0; i < data.length; i++) {
+					const member_val = members.get(data[i].userid);
+					if (member_val) {
+						mentionSubs += ('<@' + data[i].userid + '> ');
+					}
+				}
+			}).catch((error) => {
+				console.log("Error fetching members: " + error);
+			});
 
 			db.close((err) => {
 				if (err) console.error(err.message);
@@ -195,11 +199,12 @@ module.exports = {
 			return;
 		}
 		
+		await interaction.deferReply();
 		const subscribers = await getSubscribers();
 		const mainEmbed = await createEmbed(interaction);
 		const buttons = createButtons();		
 
-		await interaction.reply({content: subscribers, embeds: [mainEmbed], components: [buttons]});
+		await interaction.editReply({content: subscribers, embeds: [mainEmbed], components: [buttons]});
 		
 		console.log(`Schedule triggered by ${interaction.user.tag} in #${interaction.channel.name}.`);
 
