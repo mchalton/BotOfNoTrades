@@ -199,12 +199,11 @@ module.exports = {
 			return;
 		}
 		
-		await interaction.deferReply();
 		const subscribers = await getSubscribers();
 		const mainEmbed = await createEmbed(interaction);
 		const buttons = createButtons();		
 
-		await interaction.editReply({content: subscribers, embeds: [mainEmbed], components: [buttons]});
+		await interaction.reply({content: subscribers, embeds: [mainEmbed], components: [buttons]});
 		
 		console.log(`Schedule triggered by ${interaction.user.tag} in #${interaction.channel.name}.`);
 
