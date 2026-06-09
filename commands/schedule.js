@@ -227,7 +227,7 @@ module.exports = {
 				return;
 			}
 			
-			if ((totalMinutes <= 120) && (maybeMsg1)) {
+			if ((totalMinutes <= 180) && (maybeMsg1)) {
 				let maybeString = "";				
 				for(var i = 0; i < maybeList.length; i++) {
 					maybeString += (`<@${maybeList[i]}> `)
@@ -236,7 +236,7 @@ module.exports = {
 					await interaction.guild.channels.cache.get(`${secretinfo.channelID}`).send(`Select Yes or No for the 10 man: ${maybeString}`);
 				maybeMsg1 = false;
 			}
-			if ((totalMinutes <= 60) && (maybeMsg2)) {
+			if ((totalMinutes <= 120) && (maybeMsg2)) {
 				// add to no list
 				for(var i = 0; i < yesList.length; i++) {
 					if (maybeList.includes(yesList[i])) {	
