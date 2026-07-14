@@ -1,8 +1,11 @@
 const fs = require('fs');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const { token } = require('./config.json');
+const matchzyWebhook = require('./matchzyWebhook');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMembers] });
+
+client.once('ready', () => matchzyWebhook.start(client));
 
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 
